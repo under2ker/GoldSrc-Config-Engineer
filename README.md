@@ -24,7 +24,7 @@
 - [Загрузка конфига в запущенную CS 1.6](#загрузка-конфига-в-запущенную-cs-16)
 - [Структура проекта](#структура-проекта)
 - [Модульные .cfg](#модульные-cfg)
-- [Сборка standalone .exe](#сборка-standalone-exe)
+- [Сборка v3 (Tauri)](#сборка-v3-tauri)
 - [Тесты и CI](#тесты-и-ci)
 - [Документация для разработчиков](#документация-для-разработчиков)
 - [Дизайн-система](#дизайн-система)
@@ -129,7 +129,7 @@ npm install
 npm run tauri dev
 ```
 
-Сборка установщика: `npm run tauri build`. Игровые JSON для нового стека лежат в **`data/`** (копия из архива на этапе миграции).
+Сборка: установщик — `npm run build:installer`; портабл ZIP — `npm run build:portable` (см. [ниже](#сборка-v3-tauri)). Игровые JSON лежат в **`data/`**.
 
 ---
 
@@ -303,14 +303,29 @@ cspres/
 
 ---
 
-## Сборка установщика (v3)
+## Сборка v3 (Tauri)
+
+### Установщик (MSI / NSIS)
 
 ```bash
 npm install
-npm run tauri build
+npm run build:installer
 ```
 
-Артефакты: `src-tauri/target/release/bundle/` (MSI / NSIS на Windows).
+На Windows артефакты лежат в **`target/release/bundle/`** (корень workspace): подкаталоги **`msi`**, **`nsis`**.
+
+### Портабельная сборка (ZIP)
+
+Архив с исполняемым файлом и DLL **без установщика** — удобно выложить в Releases.
+
+```bash
+npm install
+npm run build:portable
+```
+
+Команда вызывает `tauri build --no-bundle` (сборка фронта и релизного exe), затем **`scripts/package-portable.ps1`** формирует ZIP: **`artifacts/GoldSrc-Config-Engineer-<версия>-portable-win64.zip`**. В архиве — **`README-PORTABLE.txt`** (WebView2, запуск).
+
+Для полноценного установщика используйте **`npm run build:installer`**, а не портабл-скрипт.
 
 ## Сборка standalone v2 (архив, PyInstaller)
 

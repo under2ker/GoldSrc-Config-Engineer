@@ -27,6 +27,9 @@ src-tauri/target/
 # Локальные примеры сборки .cfg (не коммитить)
 output/
 
+# Артефакты ручной упаковки (портабл zip)
+artifacts/
+
 # Logs
 logs/
 *.log

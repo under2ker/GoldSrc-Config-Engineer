@@ -17,7 +17,10 @@
     "build": "tsc && vite build",
     "test": "cargo test --workspace && cargo check --workspace && npm run build",
     "preview": "vite preview",
-    "tauri": "tauri"
+    "tauri": "tauri",
+    "build:portable:bundle": "npm run build && tauri build --no-bundle",
+    "build:portable": "npm run build:portable:bundle && powershell -NoProfile -ExecutionPolicy Bypass -File scripts/package-portable.ps1",
+    "build:installer": "npm run build && tauri build"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

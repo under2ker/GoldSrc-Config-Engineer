@@ -6,7 +6,9 @@
 
 ## [Unreleased]
 
-Изменений после **v3.2.1** пока нет.
+### Сборка
+
+- Портабельная упаковка для Windows: **`npm run build:portable`** → `artifacts/GoldSrc-Config-Engineer-<версия>-portable-win64.zip` (`tauri build --no-bundle` + **`scripts/package-portable.ps1`**); установщик — **`npm run build:installer`**. Подробности в [README](README.md#сборка-v3-tauri).
 
 ---
 
