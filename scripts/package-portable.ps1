@@ -31,18 +31,13 @@ Get-ChildItem $releaseDir -Filter "*.dll" -File | ForEach-Object {
     Copy-Item $_.FullName $staging
 }
 
-$readme = @"
-GoldSrc Config Engineer — портабельная сборка (Windows x64)
-Версия: $ver
-
-Запуск: goldsr-config-engineer.exe (из этой папки).
-
-Требуется среда WebView2 (Microsoft Edge WebView2 Runtime). В Windows 10/11 она обычно уже установлена.
-Если окно не открывается — установите: https://developer.microsoft.com/microsoft-edge/webview2/
-
-Данные приложения (SQLite, настройки) хранятся в профиле пользователя, не в папке с exe.
-"@
-$readme | Out-File (Join-Path $staging "README-PORTABLE.txt") -Encoding utf8
+$templatePath = Join-Path $PSScriptRoot "README-PORTABLE.txt"
+$text = [System.IO.File]::ReadAllText($templatePath, [System.Text.UTF8Encoding]::new($false))
+$text = $text.Replace("{{VERSION}}", $ver)
+$readmeDest = Join-Path $staging "README-PORTABLE.txt"
+# UTF-8 с BOM — Блокнот и старые программы Windows открывают кириллицу без «иероглифов»
+$utf8Bom = New-Object System.Text.UTF8Encoding $true
+[System.IO.File]::WriteAllText($readmeDest, $text, $utf8Bom)
 
 $outDir = Join-Path $root "artifacts"
 New-Item -ItemType Directory -Force -Path $outDir | Out-Null
