@@ -1,5 +1,7 @@
 # CS 1.6 — GoldSrc Config Engineer
 
+[![CI](https://github.com/under2ker/GoldSrc-Config-Engineer/actions/workflows/ci.yml/badge.svg)](https://github.com/under2ker/GoldSrc-Config-Engineer/actions/workflows/ci.yml)
+
 **Версия в разработке: 3.2.0** · Профессиональный генератор конфигурационных файлов для **Counter-Strike 1.6** (GoldSrc)
 
 Активная кодовая база — **Tauri 2 + React 18 + TypeScript** (Rust backend). Предыдущая стабильная линейка **v2.4.x (Python + CustomTkinter)** перенесена в **[`archive/v2-python-customtkinter/`](archive/v2-python-customtkinter/README.md)** и помечена как архив.
@@ -367,7 +369,7 @@ python -m pytest tests/ -v
 
 ## Лицензия
 
-Проект предназначен для **личного и образовательного** использования. Условия распространения при необходимости уточняйте у автора.
+Проект предназначен для **личного и образовательного** использования. Текст правовых условий — в файле **[LICENSE](LICENSE)**; при необходимости уточняйте распространение у автора.
 
 ---
 

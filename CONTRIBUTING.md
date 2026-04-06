@@ -7,8 +7,8 @@
 ## Быстрый старт (v3)
 
 ```bash
-git clone https://github.com/YOUR_USER/cspres.git
-cd cspres
+git clone https://github.com/under2ker/GoldSrc-Config-Engineer.git
+cd GoldSrc-Config-Engineer
 npm install
 npm run tauri dev
 ```

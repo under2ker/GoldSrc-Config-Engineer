@@ -2,7 +2,16 @@
   "name": "goldsr-config-engineer",
   "private": true,
   "version": "3.2.0",
+  "description": "GoldSrc Config Engineer — генератор CFG для CS 1.6 (Tauri + React + Rust)",
   "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/under2ker/GoldSrc-Config-Engineer.git"
+  },
+  "bugs": {
+    "url": "https://github.com/under2ker/GoldSrc-Config-Engineer/issues"
+  },
+  "homepage": "https://github.com/under2ker/GoldSrc-Config-Engineer#readme",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",

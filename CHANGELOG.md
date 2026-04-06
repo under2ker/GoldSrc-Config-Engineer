@@ -163,6 +163,10 @@
 
 - Каталоги **`modes`**, **`presets`**, **`cvars`**, **`aliases`**, **`buyscripts`** перенесены в модуль **`src/data/`**; JSON по-прежнему в **`data/*.json`** у корня репозитория, публичный API crate без изменений.
 
+### Репозиторий
+
+- Добавлены **`LICENSE`**, **`.gitattributes`**, расширен **`.gitignore`** (`.env`, `*.tsbuildinfo`); в **`package.json`** — ссылка на GitHub; в **CI** — кэш Rust; в **README** — бейдж CI.
+
 ---
 
 ## [3.1.3] — 2026-04-04

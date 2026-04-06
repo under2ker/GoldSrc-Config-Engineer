@@ -8,11 +8,17 @@ venv/
 *.egg-info/
 dist-packages/
 
+# Secrets / локальные окружения
+.env
+.env.*
+!.env.example
+
 # Node / Tauri frontend
 node_modules/
 dist/
 dist-ssr/
 *.local
+*.tsbuildinfo
 
 # Rust / Tauri (workspace `cargo` кладёт артефакты в корневой target/)
 target/
