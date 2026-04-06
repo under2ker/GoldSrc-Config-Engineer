@@ -23,6 +23,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { ModeSearchSelect, PresetSearchSelect } from "@/components/catalog/CatalogSearchSelect";
 import {
   Select,
   SelectContent,
@@ -260,45 +261,29 @@ export function ExportPage() {
               {source === "mode" ? (
                 <div className="space-y-2">
                   <Label htmlFor="exp-mode-select">Режим</Label>
-                  <Select
+                  <ModeSearchSelect
+                    id="exp-mode-select"
+                    modes={modes}
                     value={modeId}
                     onValueChange={(v) => {
                       setModeId(v);
                       writeLastModeId(v);
                     }}
                     disabled={!loaded || !modes.length}
-                  >
-                    <SelectTrigger id="exp-mode-select">
-                      <SelectValue placeholder="Режим" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {modes.map((m) => (
-                        <SelectItem key={m.id} value={m.id}>
-                          {m.name_ru}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                    placeholder="Режим"
+                  />
                 </div>
               ) : (
                 <div className="space-y-2">
                   <Label htmlFor="exp-preset-select">Пресет</Label>
-                  <Select
+                  <PresetSearchSelect
+                    id="exp-preset-select"
+                    presets={presets}
                     value={presetId}
                     onValueChange={setPresetId}
                     disabled={!loaded || !presets.length}
-                  >
-                    <SelectTrigger id="exp-preset-select">
-                      <SelectValue placeholder="Пресет" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {presets.map((p) => (
-                        <SelectItem key={p.id} value={p.id}>
-                          {p.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                    placeholder="Пресет"
+                  />
                 </div>
               )}
 

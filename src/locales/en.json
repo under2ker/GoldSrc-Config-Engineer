@@ -1,0 +1,302 @@
+{
+  "layout": {
+    "appName": "GoldSrc Config Engineer",
+    "page": {
+      "/dashboard": {
+        "title": "Home",
+        "subtitle": "Overview, quick actions, and recent .cfg files"
+      },
+      "/quick-setup": {
+        "title": "Quick setup",
+        "subtitle": "Wizard: mode, preset, generate and save"
+      },
+      "/modes": {
+        "title": "Game modes",
+        "subtitle": "Mode catalog and single .cfg generation"
+      },
+      "/presets": {
+        "title": "Pro presets",
+        "subtitle": "Pro presets by team and role"
+      },
+      "/crosshair": {
+        "title": "Crosshair",
+        "subtitle": "Crosshair preview and CVAR hints"
+      },
+      "/sensitivity": {
+        "title": "Mouse sensitivity",
+        "subtitle": "cm per 360° and index to compare configs"
+      },
+      "/compare": {
+        "title": "Compare configs",
+        "subtitle": "Line-by-line diff of two config texts"
+      },
+      "/export": {
+        "title": "Export",
+        "subtitle": "Single file or modular set to a folder"
+      },
+      "/import": {
+        "title": "Import",
+        "subtitle": "Parse .cfg and draft for the editor"
+      },
+      "/launch-options": {
+        "title": "Launch options",
+        "subtitle": "Steam / hl.exe launch parameters"
+      },
+      "/preview": {
+        "title": "Preview",
+        "subtitle": "Syntax highlight; text stays local"
+      },
+      "/diagnostics": {
+        "title": "Diagnostics",
+        "subtitle": "Environment check and session log"
+      },
+      "/settings": {
+        "title": "Settings",
+        "subtitle": "Theme, language, app data, and game folder"
+      },
+      "/profiles": {
+        "title": "Profiles",
+        "subtitle": "Local profiles and config snapshot history"
+      },
+      "/aliases": {
+        "title": "Aliases",
+        "subtitle": "Alias presets and aliases.cfg generation"
+      }
+    }
+  },
+  "nav": {
+    "dashboard": "Home",
+    "quick-setup": "Quick setup",
+    "modes": "Modes",
+    "presets": "Pro presets",
+    "crosshair": "Crosshair",
+    "sensitivity": "Sensitivity",
+    "launch-options": "Launch options",
+    "compare": "Compare",
+    "export": "Export",
+    "import": "Import",
+    "profiles": "Profiles",
+    "aliases": "Aliases",
+    "preview": "Preview",
+    "diagnostics": "Diagnostics",
+    "settings": "Settings"
+  },
+  "route": {
+    "dashboard": "Home",
+    "quick-setup": "Quick setup",
+    "modes": "Modes",
+    "presets": "Pro presets",
+    "crosshair": "Crosshair",
+    "sensitivity": "Mouse sensitivity",
+    "compare": "Compare configs",
+    "export": "Export",
+    "import": "Import",
+    "launch-options": "Launch options",
+    "preview": "Preview",
+    "diagnostics": "Diagnostics",
+    "settings": "Settings",
+    "profiles": "Profiles",
+    "aliases": "Aliases"
+  },
+  "sidebar": {
+    "sections": "Sections",
+    "tools": "Tools",
+    "brandTitle": "GoldSrc Config",
+    "brandMeta": "Engineer v3",
+    "recentOverline": "Recent .cfg",
+    "recentEmpty": "No saves yet",
+    "recentTooltipHas": "Last file: {{name}}",
+    "recentTooltipEmpty": "No recent .cfg — they appear after “Save as…” on export or home.",
+    "collapse": "Collapse",
+    "expand": "Expand",
+    "collapsePanel": "Collapse sidebar",
+    "expandPanel": "Expand sidebar"
+  },
+  "header": {
+    "search": "Search…",
+    "toggleSidebar": "Collapse sidebar",
+    "openSearch": "Open search"
+  },
+  "breadcrumbs": {
+    "aria": "Breadcrumb",
+    "home": "Home"
+  },
+  "titleBar": {
+    "appTitle": "GoldSrc Config Engineer",
+    "minimize": "Minimize",
+    "maximize": "Maximize",
+    "close": "Close"
+  },
+  "main": {
+    "skipToContent": "Skip to main content"
+  },
+  "contextMenu": {
+    "home": "Home",
+    "quickSetup": "Quick setup…",
+    "modes": "Modes…",
+    "compare": "Compare configs…",
+    "presets": "Pro presets…",
+    "crosshair": "Crosshair…",
+    "sensitivity": "Mouse sensitivity…",
+    "export": "Export…",
+    "import": "Import…",
+    "launchOptions": "Steam launch options…",
+    "settings": "Settings…",
+    "commandPalette": "Command palette",
+    "help": "Help (F1)"
+  },
+  "toast": {
+    "fullscreen": "Fullscreen (F11) is available in the Windows / macOS app",
+    "exportTitle": "Export .cfg",
+    "exportDesc": "Generate the file and use “Save as…”."
+  },
+  "dashboard": {
+    "loading": "Loading…",
+    "dash": "—",
+    "ellipsis": "…",
+    "loadingModesList": "Loading game modes…",
+    "toast": {
+      "configGenerated": "Config generated",
+      "genError": "Generation failed",
+      "fileSaved": "File saved",
+      "saveCancelled": "Save cancelled",
+      "pathCopied": "Path copied",
+      "pathCopyFailed": "Could not copy path"
+    },
+    "profilesCard": {
+      "title": "Local profiles",
+      "description": "Saved setups (import → “Save as profile”): {{count}}",
+      "cta": "Open profiles"
+    },
+    "historyCard": {
+      "title": "Snapshot history",
+      "description": "Entries in local history: {{count}}",
+      "cta": "List and history"
+    },
+    "generate": {
+      "title": "Generate by mode",
+      "descriptionBefore": "Pick a mode and save the result as",
+      "descriptionAfter": "for the game.",
+      "modesLoadError": "Could not load modes: {{error}}",
+      "modeLabel": "Generation mode",
+      "generateBtn": "Generate .cfg",
+      "saveAs": "Save as…",
+      "importLink": "Import .cfg…",
+      "savedNote": "Saved: {{path}}"
+    },
+    "hero": {
+      "welcomePrefix": "Welcome to",
+      "lead": "Generate, tune, and manage configs for CS 1.6, Half-Life, and other GoldSrc games.",
+      "modesBadge": "Modes: {{val}}",
+      "presetsBadge": "Presets: {{val}}",
+      "versionBadge": "v{{version}}"
+    },
+    "insight": {
+      "quickGen": "Quick generation",
+      "quickGenHint": "Mode below — “Generate .cfg”",
+      "lastConfig": "Last config",
+      "draftInMemory": "Draft in memory",
+      "draftHintDefault": "Save to disk to add it to history",
+      "noSaves": "No saves yet",
+      "noSavesHint": "Generate and use “Save as…”",
+      "stats": "Statistics",
+      "statsLoadError": "Could not load catalog",
+      "statsLine": "{{modes}} modes · {{presets}} presets",
+      "statsCaption": "Built-in modes and pro presets",
+      "sqliteTitle": "Local database (SQLite)",
+      "sqliteLine": "Profiles: {{profiles}} · Snapshots: {{snapshots}}",
+      "sqliteLinePending": "Profiles: {{profiles}} · History: …",
+      "sqliteLink": "Profiles and history"
+    },
+    "readiness": {
+      "title": "Environment readiness",
+      "descDesktop": "Rough score from catalog, recent files, and local DB — not .cfg quality.",
+      "descWeb": "Rough score from catalog, recent files, and import draft — not .cfg quality.",
+      "outOf100": "of 100",
+      "hint100": "Catalog, saves, and database in use — solid workflow.",
+      "hint75desktop": "Add profiles or history snapshots to finish the checklist.",
+      "hint75web": "Save a .cfg to disk or use the desktop app for profiles and history.",
+      "hint50": "Save generated .cfg to the game folder to get a recent-file entry.",
+      "hint25": "Wait for the mode catalog, then generate and save a config.",
+      "hint0": "Load the mode and preset catalog (check network and Diagnostics)."
+    },
+    "completeness": {
+      "title": "Config completeness",
+      "descEmpty": "Per-section score (settings, binds, net, video, crosshair, etc.) — like the Python app indicator.",
+      "descHasData": "Share of filled sections from the current draft (import or last home generation).",
+      "emptyBody": "No parsed config: generate .cfg on Home or import a file to see the percentage and bar.",
+      "sectionsDone": "{{done}} of {{total}} sections",
+      "sectionsAria": "Config sections",
+      "hintHigh": "Most sections covered — add net, sound, and buy as needed in the editor.",
+      "hintMid": "Add binds, net CVARs, crosshair, and sensitivity — same idea as v2.",
+      "hintLow": "Minimum: generate from a mode or import a .cfg, then fill more sections.",
+      "section": {
+        "settings": "Settings (CVAR)",
+        "binds": "Binds",
+        "mode": "Mode / preset",
+        "net": "Network (rate, updaterate…)",
+        "video": "Video / OpenGL",
+        "crosshair": "Crosshair",
+        "mouse": "Mouse / sensitivity",
+        "sound": "Sound",
+        "fps": "FPS / performance",
+        "buy": "Buy"
+      }
+    },
+    "quickActions": {
+      "sectionTitle": "Quick actions",
+      "generate": { "title": "Quick generation", "description": "Mode and “Generate .cfg”" },
+      "wizard": { "title": "Quick setup", "description": "Step-by-step config wizard" },
+      "import": { "title": "Import config", "description": "Load an existing .cfg" },
+      "aliases": { "title": "Aliases", "description": "Script presets (+jumpthrow, cycles, KZ)" },
+      "crosshair": { "title": "Crosshair", "description": "Visual crosshair editor" },
+      "sensitivity": { "title": "Mouse sensitivity", "description": "cm/360° and compare with other configs" },
+      "launch": { "title": "Launch options", "description": "Steam launch line (CS 1.6)" },
+      "compare": { "title": "Compare", "description": "Diff two configs" },
+      "export": { "title": "Export", "description": "Save config to file" }
+    },
+    "recent": {
+      "title": "Recent configs",
+      "emptyTitle": "Recent configs will appear here",
+      "emptyHint": "Generate a config and save with “Save as…”, or import a file"
+    },
+    "gameTip": {
+      "title": "Did you know?",
+      "moreTip": "Another tip",
+      "tipsMeta": "({{count}} tips, Phase 4)"
+    },
+    "tipCategory": {
+      "aim": "Aim & shooting",
+      "movement": "Movement",
+      "network": "Network & ticks",
+      "visual": "Visuals & FPS",
+      "general": "General"
+    }
+  },
+  "diagnosticsPage": {
+    "catalog": {
+      "title": "Data catalogs (GitHub)",
+      "description": "On startup the app checks JSON updates from the repo in the background (If-Modified-Since). Here you can sync manually or reload files from disk (see app data paths in Settings).",
+      "syncBtn": "Sync from GitHub",
+      "reloadBtn": "Reload from disk",
+      "syncing": "Syncing…",
+      "reloadOk": "Catalogs reloaded from disk",
+      "syncOk": "Sync finished",
+      "syncResult": "Checked: {{checked}}, updated: {{updated}}, not modified: {{skipped}}, errors in report: {{errors}}",
+      "lastReportTitle": "Last sync report",
+      "statChecked": "Files checked",
+      "statUpdated": "Updated",
+      "statSkipped": "Unchanged",
+      "statErrors": "Errors",
+      "errorsTitle": "Messages:",
+      "desktopOnly": "Available in the desktop app for Windows / macOS / Linux."
+    }
+  },
+  "settingsPage": {
+    "catalog": {
+      "title": "Data catalog updates",
+      "description": "Modes, presets, aliases, and the CVAR reference are fetched from GitHub into catalog_data next to app data. A background check runs at startup; here you can check for updates and download manually.",
+      "moreInDiagnostics": "Full environment checks are on the Diagnostics page."
+    }
+  }
+}

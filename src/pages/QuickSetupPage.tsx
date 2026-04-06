@@ -12,13 +12,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { ModeSearchSelect, PresetSearchSelect } from "@/components/catalog/CatalogSearchSelect";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Switch } from "@/components/ui/switch";
@@ -162,25 +156,16 @@ export function QuickSetupPage() {
           {step === 1 ? (
             <div className="space-y-2">
               <Label htmlFor="qs-mode">Игровой режим</Label>
-              <Select
+              <ModeSearchSelect
+                id="qs-mode"
+                modes={modes}
                 value={modeId}
                 onValueChange={(v) => {
                   setModeId(v);
                   writeLastModeId(v);
                 }}
                 disabled={!loaded || modes.length === 0}
-              >
-                <SelectTrigger id="qs-mode">
-                  <SelectValue placeholder="Выберите режим" />
-                </SelectTrigger>
-                <SelectContent>
-                  {modes.map((m) => (
-                    <SelectItem key={m.id} value={m.id}>
-                      {m.name_ru} ({m.name_en})
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              />
             </div>
           ) : null}
 
@@ -198,22 +183,13 @@ export function QuickSetupPage() {
               {usePreset ? (
                 <div className="space-y-2">
                   <Label htmlFor="qs-preset">Пресет</Label>
-                  <Select
+                  <PresetSearchSelect
+                    id="qs-preset"
+                    presets={presets}
                     value={presetId}
                     onValueChange={setPresetId}
                     disabled={!loaded || presets.length === 0}
-                  >
-                    <SelectTrigger id="qs-preset">
-                      <SelectValue placeholder="Выберите пресет" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {presets.map((p) => (
-                        <SelectItem key={p.id} value={p.id}>
-                          {p.name} — {p.team} / {p.role}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  />
                 </div>
               ) : null}
             </div>

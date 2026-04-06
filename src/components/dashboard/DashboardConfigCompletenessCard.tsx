@@ -3,26 +3,28 @@ import { PieChart } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import type { ConfigCompletenessResult } from "@/lib/configCompleteness";
+import { interpolate, useI18n } from "@/lib/i18n";
 import { pageCaptionClass } from "@/lib/layoutTokens";
 import { cn } from "@/lib/utils";
 
-function progressTone(pct: number): { indicator: string; hint: string } {
+function progressToneClass(pct: number): string {
   if (pct >= 80) {
-    return {
-      indicator: "bg-emerald-600 dark:bg-emerald-500",
-      hint: "Большинство разделов представлены — при необходимости добейте сеть, звук и закупку в редакторе конфига.",
-    };
+    return "bg-emerald-600 dark:bg-emerald-500";
   }
   if (pct >= 40) {
-    return {
-      indicator: "bg-blue-600 dark:bg-blue-500",
-      hint: "Добавьте бинды, сетевые CVAR, прицел и чувствительность — как в v2 (индикатор по секциям).",
-    };
+    return "bg-blue-600 dark:bg-blue-500";
   }
-  return {
-    indicator: "bg-amber-600 dark:bg-amber-500",
-    hint: "Минимальный набор: сгенерируйте конфиг по режиму или импортируйте готовый .cfg, затем дополните разделы.",
-  };
+  return "bg-amber-600 dark:bg-amber-500";
+}
+
+function completenessHintKey(pct: number): string {
+  if (pct >= 80) {
+    return "dashboard.completeness.hintHigh";
+  }
+  if (pct >= 40) {
+    return "dashboard.completeness.hintMid";
+  }
+  return "dashboard.completeness.hintLow";
 }
 
 type DashboardConfigCompletenessCardProps = {
@@ -32,6 +34,8 @@ type DashboardConfigCompletenessCardProps = {
 export const DashboardConfigCompletenessCard = memo(function DashboardConfigCompletenessCard({
   result,
 }: DashboardConfigCompletenessCardProps) {
+  const { t } = useI18n();
+
   if (!result) {
     return (
       <Card className="border-border/80 shadow-sm">
@@ -44,25 +48,22 @@ export const DashboardConfigCompletenessCard = memo(function DashboardConfigComp
               <PieChart className="size-5" strokeWidth={1.75} />
             </div>
             <div className="min-w-0 space-y-1">
-              <CardTitle className="text-base">Заполненность конфига</CardTitle>
+              <CardTitle className="text-base">{t("dashboard.completeness.title")}</CardTitle>
               <CardDescription className={cn(pageCaptionClass, "sm:text-sm")}>
-                Оценка по разделам (параметры, бинды, сеть, видео, прицел и др.) — как индикатор в версии на Python.
+                {t("dashboard.completeness.descEmpty")}
               </CardDescription>
             </div>
           </div>
         </CardHeader>
         <CardContent>
-          <p className={pageCaptionClass}>
-            Нет разобранного конфига: сгенерируйте .cfg на главной или импортируйте файл — тогда появится процент и
-            полоса прогресса.
-          </p>
+          <p className={pageCaptionClass}>{t("dashboard.completeness.emptyBody")}</p>
         </CardContent>
       </Card>
     );
   }
 
   const { pct, done, total, sections } = result;
-  const tone = progressTone(pct);
+  const indicatorClass = progressToneClass(pct);
 
   return (
     <Card className="border-border/80 shadow-sm">
@@ -75,9 +76,9 @@ export const DashboardConfigCompletenessCard = memo(function DashboardConfigComp
             <PieChart className="size-5" strokeWidth={1.75} />
           </div>
           <div className="min-w-0 space-y-1">
-            <CardTitle className="text-base">Заполненность конфига</CardTitle>
+            <CardTitle className="text-base">{t("dashboard.completeness.title")}</CardTitle>
             <CardDescription className={cn(pageCaptionClass, "sm:text-sm")}>
-              Доля заполненных разделов по содержимому текущего черновика (импорт или последняя генерация на главной).
+              {t("dashboard.completeness.descHasData")}
             </CardDescription>
           </div>
         </div>
@@ -86,24 +87,35 @@ export const DashboardConfigCompletenessCard = memo(function DashboardConfigComp
         <div className="flex items-end justify-between gap-2">
           <span className="text-2xl font-semibold tabular-nums text-foreground">{pct}%</span>
           <span className="pb-0.5 text-xs text-muted-foreground">
-            {done} из {total} разделов
+            {interpolate(t("dashboard.completeness.sectionsDone"), {
+              done: String(done),
+              total: String(total),
+            })}
           </span>
         </div>
-        <Progress value={pct} className="h-2" indicatorClassName={tone.indicator} />
-        <p className={pageCaptionClass}>{tone.hint}</p>
-        <ul className="grid gap-1.5 text-[11px] leading-snug text-muted-foreground sm:grid-cols-2" aria-label="Разделы конфига">
-          {sections.map((s) => (
-            <li key={s.id} className="flex items-center gap-2">
-              <span
-                className={cn(
-                  "size-1.5 shrink-0 rounded-full",
-                  s.ok ? "bg-emerald-500" : "bg-muted-foreground/35",
-                )}
-                aria-hidden
-              />
-              <span className={cn(s.ok ? "text-foreground/90" : "text-muted-foreground")}>{s.label}</span>
-            </li>
-          ))}
+        <Progress value={pct} className="h-2" indicatorClassName={indicatorClass} />
+        <p className={pageCaptionClass}>{t(completenessHintKey(pct))}</p>
+        <ul
+          className="grid gap-1.5 text-[11px] leading-snug text-muted-foreground sm:grid-cols-2"
+          aria-label={t("dashboard.completeness.sectionsAria")}
+        >
+          {sections.map((s) => {
+            const sk = `dashboard.completeness.section.${s.id}`;
+            const tr = t(sk);
+            const label = tr === sk ? s.label : tr;
+            return (
+              <li key={s.id} className="flex items-center gap-2">
+                <span
+                  className={cn(
+                    "size-1.5 shrink-0 rounded-full",
+                    s.ok ? "bg-emerald-500" : "bg-muted-foreground/35",
+                  )}
+                  aria-hidden
+                />
+                <span className={cn(s.ok ? "text-foreground/90" : "text-muted-foreground")}>{label}</span>
+              </li>
+            );
+          })}
         </ul>
       </CardContent>
     </Card>

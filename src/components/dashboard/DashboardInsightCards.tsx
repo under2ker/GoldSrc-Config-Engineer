@@ -1,5 +1,7 @@
 import { BarChart3, FileText, Zap } from "lucide-react";
+import { Link } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
+import { interpolate, useI18n } from "@/lib/i18n";
 import { pageCaptionClass, pageSectionTitleClass } from "@/lib/layoutTokens";
 import { cn } from "@/lib/utils";
 import type { RecentConfigEntry } from "@/lib/recentConfigs";
@@ -13,6 +15,8 @@ type DashboardInsightCardsProps = {
   lastSaved: RecentConfigEntry | null;
   hasDraft: boolean;
   draftSummary?: string | null;
+  /** Счётчики из SQLite (только настольная сборка). */
+  sqliteStats?: { profileCount: number; historyCount: number | null } | null;
 };
 
 export function DashboardInsightCards({
@@ -24,7 +28,11 @@ export function DashboardInsightCards({
   lastSaved,
   hasDraft,
   draftSummary,
+  sqliteStats,
 }: DashboardInsightCardsProps) {
+  const { t } = useI18n();
+  const ell = t("dashboard.ellipsis");
+
   return (
     <div className="grid gap-6 md:grid-cols-3">
       <Card className="border-border/80 shadow-sm">
@@ -37,14 +45,12 @@ export function DashboardInsightCards({
           </div>
           <div className="min-w-0 space-y-1">
             <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-              Быстрая генерация
+              {t("dashboard.insight.quickGen")}
             </p>
             <p className="truncate text-sm font-medium text-foreground" title={currentModeLabel}>
-              {loaded ? currentModeLabel : "Загрузка списка режимов…"}
+              {loaded ? currentModeLabel : t("dashboard.loadingModesList")}
             </p>
-            <p className={pageCaptionClass}>
-              Режим ниже — кнопка «Сгенерировать .cfg»
-            </p>
+            <p className={pageCaptionClass}>{t("dashboard.insight.quickGenHint")}</p>
           </div>
         </CardContent>
       </Card>
@@ -58,31 +64,25 @@ export function DashboardInsightCards({
             <FileText className="size-5" strokeWidth={1.75} />
           </div>
           <div className="min-w-0 space-y-1">
-            <p className={pageSectionTitleClass}>
-              Последний конфиг
-            </p>
+            <p className={pageSectionTitleClass}>{t("dashboard.insight.lastConfig")}</p>
             {lastSaved ? (
               <>
                 <p className="truncate text-sm font-medium text-foreground" title={lastSaved.path}>
                   {lastSaved.name}
                 </p>
-                <p className={cn(pageCaptionClass, "truncate")}>
-                  {lastSaved.modeLabel}
-                </p>
+                <p className={cn(pageCaptionClass, "truncate")}>{lastSaved.modeLabel}</p>
               </>
             ) : hasDraft ? (
               <>
-                <p className="text-sm font-medium text-foreground">Черновик в памяти</p>
+                <p className="text-sm font-medium text-foreground">{t("dashboard.insight.draftInMemory")}</p>
                 <p className={cn(pageCaptionClass, "line-clamp-2")}>
-                  {draftSummary ?? "Сохраните файл на диск, чтобы он попал в историю"}
+                  {draftSummary ?? t("dashboard.insight.draftHintDefault")}
                 </p>
               </>
             ) : (
               <>
-                <p className="text-sm text-muted-foreground">Пока нет сохранений</p>
-                <p className={pageCaptionClass}>
-                  Сгенерируйте и нажмите «Сохранить как…»
-                </p>
+                <p className="text-sm text-muted-foreground">{t("dashboard.insight.noSaves")}</p>
+                <p className={pageCaptionClass}>{t("dashboard.insight.noSavesHint")}</p>
               </>
             )}
           </div>
@@ -98,17 +98,43 @@ export function DashboardInsightCards({
             <BarChart3 className="size-5" strokeWidth={1.75} />
           </div>
           <div className="min-w-0 space-y-1">
-            <p className={pageSectionTitleClass}>
-              Статистика
-            </p>
+            <p className={pageSectionTitleClass}>{t("dashboard.insight.stats")}</p>
             {catalogError ? (
-              <p className="text-sm text-destructive">Не удалось загрузить список</p>
+              <p className="text-sm text-destructive">{t("dashboard.insight.statsLoadError")}</p>
             ) : (
               <p className="text-sm font-medium text-foreground">
-                {loaded ? `${modeCount} режимов · ${presetCount} пресетов` : "…"}
+                {loaded
+                  ? interpolate(t("dashboard.insight.statsLine"), {
+                      modes: String(modeCount),
+                      presets: String(presetCount),
+                    })
+                  : ell}
               </p>
             )}
-            <p className={pageCaptionClass}>Встроенные режимы и про-пресеты</p>
+            <p className={pageCaptionClass}>{t("dashboard.insight.statsCaption")}</p>
+            {sqliteStats ? (
+              <div className="space-y-1 border-t border-border/60 pt-2">
+                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  {t("dashboard.insight.sqliteTitle")}
+                </p>
+                <p className="text-sm font-medium text-foreground tabular-nums">
+                  {sqliteStats.historyCount === null
+                    ? interpolate(t("dashboard.insight.sqliteLinePending"), {
+                        profiles: String(sqliteStats.profileCount),
+                      })
+                    : interpolate(t("dashboard.insight.sqliteLine"), {
+                        profiles: String(sqliteStats.profileCount),
+                        snapshots: String(sqliteStats.historyCount),
+                      })}
+                </p>
+                <Link
+                  to="/profiles"
+                  className="inline-block text-xs font-medium text-primary underline-offset-4 hover:underline"
+                >
+                  {t("dashboard.insight.sqliteLink")}
+                </Link>
+              </div>
+            ) : null}
           </div>
         </CardContent>
       </Card>

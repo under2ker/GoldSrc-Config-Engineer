@@ -1,5 +1,6 @@
 use serde::Deserialize;
 
+use crate::data::overlay;
 use crate::GameModeSummary;
 
 pub(crate) const MODES_JSON_STR: &str = include_str!(concat!(
@@ -15,8 +16,9 @@ struct ModeEntry {
 
 /// Список игровых режимов из `data/modes.json` (ключ → id).
 pub fn list_mode_summaries() -> Result<Vec<GameModeSummary>, String> {
+    let raw = overlay::resolve_json("modes.json", MODES_JSON_STR);
     let map: std::collections::HashMap<String, ModeEntry> =
-        serde_json::from_str(MODES_JSON_STR).map_err(|e| e.to_string())?;
+        serde_json::from_str(&raw).map_err(|e| e.to_string())?;
     let mut out: Vec<GameModeSummary> = map
         .into_iter()
         .map(|(id, e)| GameModeSummary {

@@ -1,4 +1,5 @@
 import { PanelLeft, Search } from "lucide-react";
+import { useI18n } from "@/lib/i18n";
 import { useAppStore } from "@/stores/appStore";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -13,6 +14,7 @@ type HeaderProps = {
 };
 
 export function Header({ title, subtitle, onOpenCommandPalette }: HeaderProps) {
+  const { t } = useI18n();
   const toggleSidebarCollapsed = useAppStore((s) => s.toggleSidebarCollapsed);
 
   return (
@@ -29,14 +31,14 @@ export function Header({ title, subtitle, onOpenCommandPalette }: HeaderProps) {
         size="icon"
         className="size-9 shrink-0"
         onClick={toggleSidebarCollapsed}
-        aria-label="Свернуть боковую панель"
+        aria-label={t("header.toggleSidebar")}
       >
         <PanelLeft className="size-4" />
       </Button>
       <Separator orientation="vertical" className="hidden h-6 sm:block" />
       <div className="min-w-0 flex-1">
         <h1 className="truncate text-lg font-semibold tracking-tight text-foreground">
-          {title ?? "GoldSrc Config Engineer"}
+          {title ?? t("layout.appName")}
         </h1>
         {subtitle ? (
           <p className="mt-0.5 line-clamp-2 text-xs leading-snug text-muted-foreground sm:text-sm">{subtitle}</p>
@@ -50,7 +52,7 @@ export function Header({ title, subtitle, onOpenCommandPalette }: HeaderProps) {
         onClick={onOpenCommandPalette}
       >
         <Search className="size-3.5" />
-        Поиск…
+        {t("header.search")}
         <kbd className="pointer-events-none ml-1 hidden rounded border bg-muted px-1 font-mono text-[10px] font-medium opacity-80 lg:inline">
           ⌘K
         </kbd>
@@ -61,7 +63,7 @@ export function Header({ title, subtitle, onOpenCommandPalette }: HeaderProps) {
         size="icon"
         className="size-9 shrink-0 sm:hidden"
         onClick={onOpenCommandPalette}
-        aria-label="Открыть поиск"
+        aria-label={t("header.openSearch")}
       >
         <Search className="size-4" />
       </Button>

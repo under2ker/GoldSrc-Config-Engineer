@@ -9,6 +9,7 @@ use crate::cfg_config::CfgConfig;
 use crate::data::aliases::generate_aliases_cfg;
 use crate::data::cvars::CvarsCatalog;
 use crate::data::modes::MODES_JSON_STR;
+use crate::data::overlay;
 use crate::data::presets::PRESETS_JSON_STR;
 
 pub(crate) static CAT_ORDER: &[&str] = &[
@@ -63,8 +64,9 @@ fn json_to_cfg_string(v: &serde_json::Value) -> String {
 
 /// Собрать конфиг из режима (`modes.json`, ключ — id).
 pub fn create_mode_config(mode_key: &str) -> Result<CfgConfig, String> {
+    let raw = overlay::resolve_json("modes.json", MODES_JSON_STR);
     let map: HashMap<String, ModeFull> =
-        serde_json::from_str(MODES_JSON_STR).map_err(|e| e.to_string())?;
+        serde_json::from_str(&raw).map_err(|e| e.to_string())?;
     let mode_data = map
         .get(mode_key)
         .ok_or_else(|| format!("Unknown mode: {mode_key}"))?;
@@ -87,8 +89,9 @@ pub fn create_mode_config(mode_key: &str) -> Result<CfgConfig, String> {
 
 /// Собрать конфиг из про-пресета (`presets.json`).
 pub fn create_preset_config(preset_key: &str) -> Result<CfgConfig, String> {
+    let raw = overlay::resolve_json("presets.json", PRESETS_JSON_STR);
     let map: HashMap<String, PresetFull> =
-        serde_json::from_str(PRESETS_JSON_STR).map_err(|e| e.to_string())?;
+        serde_json::from_str(&raw).map_err(|e| e.to_string())?;
     let preset_data = map
         .get(preset_key)
         .ok_or_else(|| format!("Unknown preset: {preset_key}"))?;
@@ -190,7 +193,7 @@ pub fn generate_single_cfg(cfg: &CfgConfig) -> Result<String, String> {
     lines.extend(console_banner(cfg));
     lines.push(String::new());
 
-    let categorized = categorize_settings(catalog, &cfg.settings);
+    let categorized = categorize_settings(catalog.as_ref(), &cfg.settings);
 
     let category_labels: HashMap<&str, &str> = [
         ("video", "VIDEO"),
@@ -215,7 +218,7 @@ pub fn generate_single_cfg(cfg: &CfgConfig) -> Result<String, String> {
             .unwrap_or_else(|| cat_key.to_uppercase());
         lines.push(format!("// === {label_owned} ==="));
         for (cvar, value) in cat_settings {
-            lines.push(fmt_cvar_line(catalog, cvar, value, 40));
+            lines.push(fmt_cvar_line(catalog.as_ref(), cvar, value, 40));
         }
         lines.push(String::new());
     }
@@ -234,7 +237,7 @@ pub fn generate_single_cfg(cfg: &CfgConfig) -> Result<String, String> {
         }
         lines.push(format!("// === {} ===", cat_key.to_uppercase()));
         for (cvar, value) in cat_settings {
-            lines.push(fmt_cvar_line(catalog, cvar, value, 40));
+            lines.push(fmt_cvar_line(catalog.as_ref(), cvar, value, 40));
         }
         lines.push(String::new());
     }

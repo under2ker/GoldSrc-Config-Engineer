@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Link } from "react-router-dom";
 import { isTauri } from "@tauri-apps/api/core";
 import { toast } from "sonner";
@@ -10,6 +12,7 @@ import { GLOBAL_KEYBOARD_SHORTCUTS } from "@/lib/keyboardShortcutsMeta";
 import { useAppStore } from "@/stores/appStore";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -24,8 +27,17 @@ import { openPath } from "@tauri-apps/plugin-opener";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { pageCaptionClass, pageLeadClass, pageShellNarrowClass } from "@/lib/layoutTokens";
+import { CatalogSyncSection } from "@/components/catalog/CatalogSyncSection";
+import { catalogReloadLocalWithUi, catalogSyncNowWithUi } from "@/lib/catalogSyncUi";
+import { useI18n } from "@/lib/i18n";
+import {
+  type SettingsHistoryMaxFormValues,
+  settingsHistoryMaxSchema,
+} from "@/lib/formSchemas";
+import type { CatalogSyncReport } from "@/types/api";
 
 export function SettingsPage() {
+  const { t } = useI18n();
   const [gameBusy, setGameBusy] = useState(false);
   const [gamePath, setGamePath] = useState<string | null>(null);
   const [gameHint, setGameHint] = useState<string | null>(null);
@@ -39,16 +51,24 @@ export function SettingsPage() {
   const verboseLog = useAppStore((s) => s.verboseLog);
   const setVerboseLog = useAppStore((s) => s.setVerboseLog);
 
-  const [historyMaxStr, setHistoryMaxStr] = useState("100");
+  const historyMaxForm = useForm<SettingsHistoryMaxFormValues>({
+    resolver: zodResolver(settingsHistoryMaxSchema),
+    defaultValues: { historyMax: "100" },
+    mode: "onBlur",
+  });
+  const resetHistoryMaxForm = historyMaxForm.reset;
+
   const [appPaths, setAppPaths] = useState<AppPathsInfo | null>(null);
   const [backendPing, setBackendPing] = useState<string | null>(null);
+  const [catalogBusy, setCatalogBusy] = useState<"sync" | "reload" | null>(null);
+  const [lastCatalogReport, setLastCatalogReport] = useState<CatalogSyncReport | null>(null);
 
   useEffect(() => {
     if (!isTauri()) return;
     void appSettingsGet(HISTORY_MAX_ENTRIES_KEY).then((v) => {
-      if (v != null && v.trim() !== "") setHistoryMaxStr(v.trim());
+      if (v != null && v.trim() !== "") resetHistoryMaxForm({ historyMax: v.trim() });
     });
-  }, []);
+  }, [resetHistoryMaxForm]);
 
   useEffect(() => {
     if (!isTauri()) return;
@@ -73,12 +93,8 @@ export function SettingsPage() {
     }
   }
 
-  async function saveHistoryMax() {
-    const n = Number.parseInt(historyMaxStr, 10);
-    if (Number.isNaN(n) || n < 10 || n > 500) {
-      toast.error("Лимит истории", { description: "Введите число от 10 до 500." });
-      return;
-    }
+  async function saveHistoryMax(values: SettingsHistoryMaxFormValues) {
+    const n = Number.parseInt(values.historyMax, 10);
     await appSettingsSet(HISTORY_MAX_ENTRIES_KEY, String(n));
     toast.success("Сохранено", { description: `Хранится до ${n} снимков.` });
   }
@@ -127,7 +143,8 @@ export function SettingsPage() {
         <CardHeader>
           <CardTitle>Анимации</CardTitle>
           <CardDescription>
-            Отключает вход страницы <code className="text-xs">.page-enter</code> и дополняет системную настройку{" "}
+            Отключает переходы между разделами (Framer Motion) и класс <code className="text-xs">.page-enter</code> в
+            CSS; дополняет системную настройку{" "}
             <span className={pageCaptionClass}>prefers-reduced-motion</span>.
           </CardDescription>
         </CardHeader>
@@ -244,23 +261,41 @@ export function SettingsPage() {
               превышении лимита). Диапазон: 10–500.
             </CardDescription>
           </CardHeader>
-          <CardContent className="flex flex-col gap-3 sm:flex-row sm:items-end">
-            <div className="min-w-0 flex-1 space-y-2">
-              <Label htmlFor="settings-history-max">Максимум записей</Label>
-              <Input
-                id="settings-history-max"
-                type="number"
-                min={10}
-                max={500}
-                inputMode="numeric"
-                value={historyMaxStr}
-                onChange={(e) => setHistoryMaxStr(e.target.value)}
-                onBlur={() => void saveHistoryMax()}
-              />
-            </div>
-            <Button type="button" variant="secondary" onClick={() => void saveHistoryMax()}>
-              Сохранить
-            </Button>
+          <CardContent>
+            <Form {...historyMaxForm}>
+              <form
+                className="flex flex-col gap-3 sm:flex-row sm:items-end"
+                onSubmit={historyMaxForm.handleSubmit(saveHistoryMax)}
+              >
+                <FormField
+                  control={historyMaxForm.control}
+                  name="historyMax"
+                  render={({ field }) => (
+                    <FormItem className="min-w-0 flex-1">
+                      <FormLabel>Максимум записей</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          id="settings-history-max"
+                          type="number"
+                          min={10}
+                          max={500}
+                          inputMode="numeric"
+                          onBlur={() => {
+                            field.onBlur();
+                            void historyMaxForm.handleSubmit(saveHistoryMax)();
+                          }}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <Button type="submit" variant="secondary">
+                  Сохранить
+                </Button>
+              </form>
+            </Form>
           </CardContent>
         </Card>
       ) : null}
@@ -333,12 +368,59 @@ export function SettingsPage() {
       ) : null}
 
       {isTauri() ? (
+        <CatalogSyncSection
+          title={t("settingsPage.catalog.title")}
+          description={
+            <>
+              {t("settingsPage.catalog.description")}{" "}
+              <Link
+                to="/diagnostics"
+                className="font-medium text-primary underline-offset-4 transition-colors hover:text-primary/90 hover:underline"
+              >
+                {t("settingsPage.catalog.moreInDiagnostics")}
+              </Link>
+            </>
+          }
+          t={t}
+          busy={catalogBusy}
+          lastReport={lastCatalogReport}
+          showActions
+          onSync={() => {
+            void (async () => {
+              setCatalogBusy("sync");
+              try {
+                const r = await catalogSyncNowWithUi(t);
+                setLastCatalogReport(r);
+              } catch (e) {
+                toast.error(String(e));
+              } finally {
+                setCatalogBusy(null);
+              }
+            })();
+          }}
+          onReload={() => {
+            void (async () => {
+              setCatalogBusy("reload");
+              try {
+                await catalogReloadLocalWithUi(t);
+              } catch (e) {
+                toast.error(String(e));
+              } finally {
+                setCatalogBusy(null);
+              }
+            })();
+          }}
+        />
+      ) : null}
+
+      {isTauri() ? (
         <Card>
           <CardHeader>
             <CardTitle>Папка игры</CardTitle>
             <CardDescription>
-              Поиск типовой установки Counter-Strike (Steam) на этом компьютере. Для записи конфигов используйте экспорт →
-              «Записать в папку» и укажите каталог <code className="text-xs">cstrike</code>.
+              Авто-поиск по дискам <span className="whitespace-nowrap">(A:–Z:)</span>, типовым путям Steam и при наличии —{' '}
+              <code className="text-xs">libraryfolders.vdf</code> (список библиотек). Для записи конфигов — экспорт → «Записать в папку» и каталог{' '}
+              <code className="text-xs">cstrike</code>.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">

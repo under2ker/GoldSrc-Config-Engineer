@@ -5,4 +5,5 @@ pub mod aliases;
 pub mod buyscripts;
 pub mod cvars;
 pub mod modes;
+pub mod overlay;
 pub mod presets;

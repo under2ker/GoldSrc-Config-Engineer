@@ -2,9 +2,12 @@ import { getCurrentWindow } from "@tauri-apps/api/window";
 import { isTauri } from "@tauri-apps/api/core";
 import { Minus, Square, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useI18n } from "@/lib/i18n";
 
 /** Панель управления окном при `decorations: false` (Tauri). В браузере не рендерится. */
 export function TitleBar() {
+  const { t } = useI18n();
+
   if (!isTauri()) {
     return null;
   }
@@ -32,7 +35,7 @@ export function TitleBar() {
           size="icon"
           className="h-full w-10 rounded-none hover:bg-sidebar-accent"
           onClick={() => void w.minimize().catch(console.error)}
-          aria-label="Свернуть"
+          aria-label={t("titleBar.minimize")}
         >
           <Minus className="size-3.5" />
         </Button>
@@ -42,7 +45,7 @@ export function TitleBar() {
           size="icon"
           className="h-full w-10 rounded-none hover:bg-sidebar-accent"
           onClick={() => void w.toggleMaximize().catch(console.error)}
-          aria-label="Развернуть"
+          aria-label={t("titleBar.maximize")}
         >
           <Square className="size-3" />
         </Button>
@@ -52,7 +55,7 @@ export function TitleBar() {
           size="icon"
           className="h-full w-10 rounded-none hover:bg-destructive/90 hover:text-destructive-foreground"
           onClick={() => void w.close().catch(console.error)}
-          aria-label="Закрыть"
+          aria-label={t("titleBar.close")}
         >
           <X className="size-3.5" />
         </Button>

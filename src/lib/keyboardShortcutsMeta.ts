@@ -18,4 +18,5 @@ export const GLOBAL_KEYBOARD_SHORTCUTS: { action: string; keys: string }[] = [
   { action: "Экспорт (дублирует переход к экспорту)", keys: "Ctrl+S / ⌘S" },
   { action: "Справка по клавишам", keys: "F1" },
   { action: "Полноэкранный режим окна", keys: "F11" },
+  { action: "Отладочная панель (версия, маршрут, память)", keys: "F12" },
 ];

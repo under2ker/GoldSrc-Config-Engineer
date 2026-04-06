@@ -1,5 +1,5 @@
 /**
- * Обёртка над IndexedDB (`idb-keyval`) для кэша и будущего persist Zustand.
- * Фаза 1: реэкспорт; подключение к store — по мере необходимости.
+ * Обёртка над IndexedDB (`idb-keyval`).
+ * Persist черновика конфига: `configStore` (только веб), ключ `gce-config-v1` через zustand/persist.
  */
 export { clear, del, get, keys, set } from "idb-keyval";

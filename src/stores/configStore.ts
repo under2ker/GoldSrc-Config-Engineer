@@ -1,4 +1,7 @@
-import { create } from "zustand";
+import { create, type StateCreator } from "zustand";
+import { createJSONStorage, persist } from "zustand/middleware";
+import { isTauri } from "@tauri-apps/api/core";
+import { del, get, set } from "@/lib/idbStorage";
 
 export type AliasPreset = "minimal" | "full" | "custom";
 
@@ -24,7 +27,7 @@ type ConfigState = {
   bulkAliasEnabled: (m: Record<string, boolean>) => void;
 };
 
-export const useConfigStore = create<ConfigState>((set, get) => ({
+const configSlice: StateCreator<ConfigState> = (set, get) => ({
   selectedModeId: null,
   selectedPresetId: null,
   stagedProfileJson: null,
@@ -41,4 +44,30 @@ export const useConfigStore = create<ConfigState>((set, get) => ({
   setAliasEnabled: (key, enabled) =>
     set({ aliasEnabled: { ...get().aliasEnabled, [key]: enabled } }),
   bulkAliasEnabled: (aliasEnabled) => set({ aliasEnabled }),
+});
+
+/** В браузере — IndexedDB (`idb-keyval`); в Tauri черновик только в памяти (профили — в SQLite). */
+const idbPersistStorage = createJSONStorage(() => ({
+  getItem: (name) => get<string>(name).then((v) => v ?? null),
+  setItem: (name, value) => set(name, value),
+  removeItem: (name) => del(name),
 }));
+
+export const useConfigStore = isTauri()
+  ? create<ConfigState>()(configSlice)
+  : create<ConfigState>()(
+      persist(configSlice, {
+        name: "gce-config-v1",
+        version: 1,
+        storage: idbPersistStorage,
+        partialize: (s) => ({
+          selectedModeId: s.selectedModeId,
+          selectedPresetId: s.selectedPresetId,
+          stagedProfileJson: s.stagedProfileJson,
+          stagedProfileLabel: s.stagedProfileLabel,
+          aliasPreset: s.aliasPreset,
+          includePractice: s.includePractice,
+          aliasEnabled: s.aliasEnabled,
+        }),
+      }),
+    );

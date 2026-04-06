@@ -2,6 +2,7 @@ import { Gauge } from "lucide-react";
 import { isTauri } from "@tauri-apps/api/core";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { useI18n } from "@/lib/i18n";
 import { pageCaptionClass } from "@/lib/layoutTokens";
 import { cn } from "@/lib/utils";
 
@@ -52,27 +53,26 @@ export function computeReadinessScore(p: DashboardReadinessInput): number {
   return Math.min(100, s);
 }
 
-function readinessHint(score: number, isDesktop: boolean): string {
+function readinessHintKey(score: number, isDesktop: boolean): string {
   if (score >= 100) {
-    return "Каталог, сохранения и база данных используются — хорошая связка для работы с конфигами.";
+    return "dashboard.readiness.hint100";
   }
   if (score >= 75) {
-    return isDesktop
-      ? "Добавьте профили или снимки истории, чтобы закрыть последние пункты."
-      : "Сохраните .cfg на диск или продолжите в настольной версии для профилей и истории.";
+    return isDesktop ? "dashboard.readiness.hint75desktop" : "dashboard.readiness.hint75web";
   }
   if (score >= 50) {
-    return "Сохраните сгенерированный .cfg в папку игры — появится запись в недавних файлах.";
+    return "dashboard.readiness.hint50";
   }
   if (score >= 25) {
-    return "Дождитесь загрузки каталога режимов, затем сгенерируйте и сохраните конфиг.";
+    return "dashboard.readiness.hint25";
   }
-  return "Загрузите каталог режимов и пресетов (проверьте сеть и «Диагностика»).";
+  return "dashboard.readiness.hint0";
 }
 
 type DashboardReadinessCardProps = DashboardReadinessInput;
 
 export function DashboardReadinessCard(props: DashboardReadinessCardProps) {
+  const { t } = useI18n();
   const score = computeReadinessScore(props);
   const desktop = isTauri();
 
@@ -87,10 +87,9 @@ export function DashboardReadinessCard(props: DashboardReadinessCardProps) {
             <Gauge className="size-5" strokeWidth={1.75} />
           </div>
           <div className="min-w-0 space-y-1">
-            <CardTitle className="text-base">Готовность окружения</CardTitle>
+            <CardTitle className="text-base">{t("dashboard.readiness.title")}</CardTitle>
             <CardDescription className={cn(pageCaptionClass, "sm:text-sm")}>
-              Условный индекс по каталогу, недавним файлам и{desktop ? " локальной базе" : " черновику импорта"} — не
-              качество самого .cfg.
+              {desktop ? t("dashboard.readiness.descDesktop") : t("dashboard.readiness.descWeb")}
             </CardDescription>
           </div>
         </div>
@@ -98,10 +97,10 @@ export function DashboardReadinessCard(props: DashboardReadinessCardProps) {
       <CardContent className="space-y-3">
         <div className="flex items-end justify-between gap-2">
           <span className="text-2xl font-semibold tabular-nums text-foreground">{score}</span>
-          <span className="pb-0.5 text-xs text-muted-foreground">из 100</span>
+          <span className="pb-0.5 text-xs text-muted-foreground">{t("dashboard.readiness.outOf100")}</span>
         </div>
         <Progress value={score} className="h-2" />
-        <p className={pageCaptionClass}>{readinessHint(score, desktop)}</p>
+        <p className={pageCaptionClass}>{t(readinessHintKey(score, desktop))}</p>
       </CardContent>
     </Card>
   );

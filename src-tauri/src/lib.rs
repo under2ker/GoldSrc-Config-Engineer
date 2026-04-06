@@ -1,3 +1,4 @@
+mod catalog_sync;
 mod commands;
 mod db;
 
@@ -14,10 +15,12 @@ use commands::settings_commands::{app_settings_get, app_settings_set};
 use commands::game_commands::{
     deploy_modular_files, detect_game_installation, execute_console_command_stub,
 };
+use commands::catalog_commands::{catalog_reload_local, catalog_sync_now};
 use commands::app_commands::get_app_paths_info;
 use commands::hello::greet;
 use commands::profile_commands::{profile_delete, profile_list, profile_load, profile_save, profile_update};
 use db::AppDb;
+use tauri::Emitter;
 use tauri::Manager;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -29,6 +32,13 @@ pub fn run() {
         .setup(|app| {
             let db = AppDb::open(app.handle())?;
             app.manage(db);
+            let h = app.handle().clone();
+            std::thread::spawn(move || match catalog_sync::sync_and_apply(&h) {
+                Ok(report) => {
+                    let _ = h.emit("gce-catalog-synced", report);
+                }
+                Err(e) => eprintln!("gce: catalog sync at startup: {e}"),
+            });
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
@@ -59,6 +69,8 @@ pub fn run() {
             app_settings_set,
             fetch_text_from_url,
             get_app_paths_info,
+            catalog_sync_now,
+            catalog_reload_local,
             detect_game_installation,
             deploy_modular_files,
             execute_console_command_stub,

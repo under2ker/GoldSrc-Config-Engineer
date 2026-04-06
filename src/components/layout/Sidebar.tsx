@@ -21,6 +21,7 @@ import {
   Wrench,
   Zap,
 } from "lucide-react";
+import { interpolate, useI18n } from "@/lib/i18n";
 import { loadRecentConfigs, type RecentConfigEntry } from "@/lib/recentConfigs";
 import { GCE_RECENT_UPDATED } from "@/lib/uiEvents";
 import { useAppStore } from "@/stores/appStore";
@@ -39,38 +40,44 @@ import {
 } from "@/lib/layoutTokens";
 import { cn } from "@/lib/utils";
 
-type NavItem = { to: string; label: string; icon: ElementType };
+type NavItem = { to: string; icon: ElementType };
+
+function navKeyFromPath(to: string): string {
+  return to.replace(/^\//, "") || "dashboard";
+}
 
 /** Иконки и группы в духе референс-макета сайдбара. */
 const primary: NavItem[] = [
-  { to: "/dashboard", label: "Главная", icon: Home },
-  { to: "/quick-setup", label: "Быстрая настройка", icon: Zap },
-  { to: "/modes", label: "Режимы", icon: Layers },
-  { to: "/presets", label: "Про-пресеты", icon: Package },
+  { to: "/dashboard", icon: Home },
+  { to: "/quick-setup", icon: Zap },
+  { to: "/modes", icon: Layers },
+  { to: "/presets", icon: Package },
 ];
 
 const tools: NavItem[] = [
-  { to: "/crosshair", label: "Прицел", icon: Crosshair },
-  { to: "/sensitivity", label: "Чувствительность", icon: Calculator },
-  { to: "/launch-options", label: "Параметры запуска", icon: Rocket },
-  { to: "/compare", label: "Сравнение", icon: GitCompare },
-  { to: "/export", label: "Экспорт", icon: Download },
-  { to: "/import", label: "Импорт", icon: Upload },
-  { to: "/profiles", label: "Профили", icon: Library },
-  { to: "/aliases", label: "Алиасы", icon: Braces },
-  { to: "/preview", label: "Просмотр", icon: Eye },
-  { to: "/diagnostics", label: "Диагностика", icon: Activity },
+  { to: "/crosshair", icon: Crosshair },
+  { to: "/sensitivity", icon: Calculator },
+  { to: "/launch-options", icon: Rocket },
+  { to: "/compare", icon: GitCompare },
+  { to: "/export", icon: Download },
+  { to: "/import", icon: Upload },
+  { to: "/profiles", icon: Library },
+  { to: "/aliases", icon: Braces },
+  { to: "/preview", icon: Eye },
+  { to: "/diagnostics", icon: Activity },
 ];
 
 function NavButton({ item, collapsed }: { item: NavItem; collapsed: boolean }) {
+  const { t } = useI18n();
+  const label = t(`nav.${navKeyFromPath(item.to)}`);
   const Icon = item.icon;
   return (
     <Tooltip>
       <TooltipTrigger asChild>
         <NavLink
           to={item.to}
-          title={item.label}
-          aria-label={collapsed ? item.label : undefined}
+          title={label}
+          aria-label={collapsed ? label : undefined}
           className={({ isActive }) =>
             collapsed
               ? cn(
@@ -93,11 +100,11 @@ function NavButton({ item, collapsed }: { item: NavItem; collapsed: boolean }) {
             strokeWidth={1.75}
             aria-hidden
           />
-          {collapsed ? null : <span className="truncate">{item.label}</span>}
+          {collapsed ? null : <span className="truncate">{label}</span>}
         </NavLink>
       </TooltipTrigger>
       <TooltipContent side="right" sideOffset={6}>
-        {item.label}
+        {label}
       </TooltipContent>
     </Tooltip>
   );
@@ -105,6 +112,7 @@ function NavButton({ item, collapsed }: { item: NavItem; collapsed: boolean }) {
 
 /** В узком режиме без Radix ScrollArea — иначе полоса прокрутки съедает ширину и «центр» иконок смещается влево. */
 function SidebarNavScrollInner({ collapsed }: { collapsed: boolean }) {
+  const { t } = useI18n();
   return (
     <div className={cn(collapsed ? "px-1.5 py-2" : "px-2 py-3")}>
       <p
@@ -113,7 +121,7 @@ function SidebarNavScrollInner({ collapsed }: { collapsed: boolean }) {
           collapsed && "sr-only",
         )}
       >
-        Разделы
+        {t("sidebar.sections")}
       </p>
       <nav className="flex w-full flex-col gap-0.5">
         {primary.map((item) => (
@@ -129,7 +137,7 @@ function SidebarNavScrollInner({ collapsed }: { collapsed: boolean }) {
           collapsed && "sr-only",
         )}
       >
-        Инструменты
+        {t("sidebar.tools")}
       </p>
       <nav className="flex w-full flex-col gap-0.5">
         {tools.map((item) => (
@@ -142,6 +150,7 @@ function SidebarNavScrollInner({ collapsed }: { collapsed: boolean }) {
 
 /** Строка состояния в духе visual set §3.1.5: последний сохранённый .cfg из локального списка. */
 function SidebarRecentStatus({ collapsed }: { collapsed: boolean }) {
+  const { t } = useI18n();
   const [recent, setRecent] = useState<RecentConfigEntry[]>(() => loadRecentConfigs());
   useEffect(() => {
     const sync = () => setRecent(loadRecentConfigs());
@@ -152,8 +161,8 @@ function SidebarRecentStatus({ collapsed }: { collapsed: boolean }) {
   const first = recent[0];
   const has = recent.length > 0;
   const tip = has
-    ? `Последний файл: ${first.name}`
-    : "Недавних .cfg нет — появятся после «Сохранить как…» на экспорте или главной.";
+    ? interpolate(t("sidebar.recentTooltipHas"), { name: first.name })
+    : t("sidebar.recentTooltipEmpty");
 
   if (collapsed) {
     return (
@@ -191,13 +200,13 @@ function SidebarRecentStatus({ collapsed }: { collapsed: boolean }) {
         />
         <div className="min-w-0 flex-1">
           <p className={sidebarStatusOverlineClass}>
-            Недавний .cfg
+            {t("sidebar.recentOverline")}
           </p>
           <p
             className={sidebarRecentNameClass}
             title={has ? `${first.name} — ${first.path}` : undefined}
           >
-            {has ? first.name : "Нет сохранений"}
+            {has ? first.name : t("sidebar.recentEmpty")}
           </p>
         </div>
       </div>
@@ -206,8 +215,10 @@ function SidebarRecentStatus({ collapsed }: { collapsed: boolean }) {
 }
 
 export function Sidebar() {
+  const { t } = useI18n();
   const collapsed = useAppStore((s) => s.sidebarCollapsed);
   const toggleSidebarCollapsed = useAppStore((s) => s.toggleSidebarCollapsed);
+  const settingsLabel = t("nav.settings");
 
   return (
     <aside
@@ -234,9 +245,9 @@ export function Sidebar() {
           </div>
           <div className={cn("min-w-0 flex-1", collapsed && "sr-only")}>
             <p className="truncate font-semibold leading-tight tracking-tight text-sidebar-foreground">
-              GoldSrc Config
+              {t("sidebar.brandTitle")}
             </p>
-            <p className={sidebarBrandMetaClass}>Engineer v3</p>
+            <p className={sidebarBrandMetaClass}>{t("sidebar.brandMeta")}</p>
           </div>
         </div>
       </div>
@@ -269,8 +280,8 @@ export function Sidebar() {
           <TooltipTrigger asChild>
             <NavLink
               to="/settings"
-              title="Настройки"
-              aria-label={collapsed ? "Настройки" : undefined}
+              title={settingsLabel}
+              aria-label={collapsed ? settingsLabel : undefined}
               className={({ isActive }) =>
                 collapsed
                   ? cn(
@@ -293,11 +304,11 @@ export function Sidebar() {
                 strokeWidth={1.75}
                 aria-hidden
               />
-              {collapsed ? null : <span className="truncate">Настройки</span>}
+              {collapsed ? null : <span className="truncate">{settingsLabel}</span>}
             </NavLink>
           </TooltipTrigger>
           <TooltipContent side="right" sideOffset={6}>
-            Настройки
+            {settingsLabel}
           </TooltipContent>
         </Tooltip>
 
@@ -319,7 +330,7 @@ export function Sidebar() {
                       "text-sidebar-primary hover:bg-sidebar-accent/40 hover:text-sidebar-primary",
                     ),
               )}
-              aria-label={collapsed ? "Развернуть боковую панель" : "Свернуть боковую панель"}
+              aria-label={collapsed ? t("sidebar.expandPanel") : t("sidebar.collapsePanel")}
             >
               {collapsed ? (
                 <ChevronRight
@@ -330,13 +341,13 @@ export function Sidebar() {
               ) : (
                 <>
                   <ChevronLeft className="size-[18px] shrink-0 opacity-90" strokeWidth={1.75} aria-hidden />
-                  <span className="truncate">Свернуть</span>
+                  <span className="truncate">{t("sidebar.collapse")}</span>
                 </>
               )}
             </button>
           </TooltipTrigger>
           <TooltipContent side="right" sideOffset={6}>
-            {collapsed ? "Развернуть" : "Свернуть"}
+            {collapsed ? t("sidebar.expand") : t("sidebar.collapse")}
           </TooltipContent>
         </Tooltip>
       </div>

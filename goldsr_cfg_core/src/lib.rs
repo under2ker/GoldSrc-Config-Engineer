@@ -23,6 +23,8 @@ pub struct ProPresetSummary {
 }
 
 pub use data::aliases::{generate_aliases_cfg, list_alias_catalog_json, AliasCatalogItem};
+pub use data::cvars::CvarsCatalog;
+pub use data::overlay::{clear_overrides, set_overrides, CATALOG_JSON_FILES};
 pub use cfg_config::CfgConfig;
 pub use exporter::{generate_modular_files, ModularFile};
 pub use generator::{create_mode_config, create_preset_config, generate_single_cfg};
@@ -34,6 +36,18 @@ pub use validator::validate_settings_keys;
 /// Версия crate (для отладки и health-check).
 pub fn core_version() -> &'static str {
     env!("CARGO_PKG_VERSION")
+}
+
+/// Подставить JSON каталогов из памяти и перечитать кэш CVAR (после синхронизации с диска).
+pub fn apply_data_overrides(files: std::collections::HashMap<String, String>) -> Result<(), String> {
+    set_overrides(files);
+    CvarsCatalog::reload_global()
+}
+
+/// Сбросить оверлеи и вернуться к встроенным JSON + перечитать CVAR.
+pub fn clear_data_overrides_and_reload() -> Result<(), String> {
+    clear_overrides();
+    CvarsCatalog::reload_global()
 }
 
 #[cfg(test)]

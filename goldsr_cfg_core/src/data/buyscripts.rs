@@ -2,13 +2,17 @@
 
 use chrono::Local;
 
+use crate::data::overlay;
+
+const BUYSCRIPTS_JSON_STR: &str = include_str!(concat!(
+    env!("CARGO_MANIFEST_DIR"),
+    "/../data/buyscripts.json"
+));
+
 /// Собрать содержимое `config/buyscripts.cfg` (алиасы `buy_*` и опционально дефолтные бинды на нумпад).
 pub fn generate_buyscripts_cfg() -> Result<String, String> {
-    const RAW: &str = include_str!(concat!(
-        env!("CARGO_MANIFEST_DIR"),
-        "/../data/buyscripts.json"
-    ));
-    let v: serde_json::Value = serde_json::from_str(RAW).map_err(|e| e.to_string())?;
+    let raw = overlay::resolve_json("buyscripts.json", BUYSCRIPTS_JSON_STR);
+    let v: serde_json::Value = serde_json::from_str(&raw).map_err(|e| e.to_string())?;
     let now = Local::now().format("%Y-%m-%d %H:%M").to_string();
 
     let mut lines: Vec<String> = vec![

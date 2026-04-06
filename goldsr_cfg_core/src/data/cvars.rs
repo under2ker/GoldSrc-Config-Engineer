@@ -1,14 +1,18 @@
 //! Каталог CVAR из `data/cvars.json` — категории и описания для комментариев в .cfg.
 
 use std::collections::HashMap;
-use std::sync::OnceLock;
+use std::sync::{Arc, RwLock};
 
 use serde_json::Value;
+
+use crate::data::overlay;
 
 const CVARS_JSON: &str = include_str!(concat!(
     env!("CARGO_MANIFEST_DIR"),
     "/../data/cvars.json"
 ));
+
+static CAT: RwLock<Option<Arc<CvarsCatalog>>> = RwLock::new(None);
 
 #[derive(Debug)]
 pub struct CvarsCatalog {
@@ -19,8 +23,8 @@ pub struct CvarsCatalog {
 }
 
 impl CvarsCatalog {
-    fn load() -> Result<Self, String> {
-        let root: Value = serde_json::from_str(CVARS_JSON).map_err(|e| e.to_string())?;
+    fn load_from_str(raw: &str) -> Result<Self, String> {
+        let root: Value = serde_json::from_str(raw).map_err(|e| e.to_string())?;
         let obj = root
             .as_object()
             .ok_or_else(|| "cvars.json: ожидался объект".to_string())?;
@@ -50,9 +54,28 @@ impl CvarsCatalog {
         })
     }
 
-    pub fn global() -> &'static Self {
-        static CELL: OnceLock<CvarsCatalog> = OnceLock::new();
-        CELL.get_or_init(|| CvarsCatalog::load().expect("cvars.json должен парситься"))
+    pub fn global() -> Arc<Self> {
+        {
+            let r = CAT.read().expect("cvars catalog");
+            if let Some(ref a) = *r {
+                return a.clone();
+            }
+        }
+        let mut w = CAT.write().expect("cvars catalog");
+        if w.is_none() {
+            let raw = overlay::resolve_json("cvars.json", CVARS_JSON);
+            let cat = CvarsCatalog::load_from_str(&raw).expect("cvars.json должен парситься");
+            *w = Some(Arc::new(cat));
+        }
+        w.as_ref().expect("cvars init").clone()
+    }
+
+    /// Перечитать каталог после смены оверлея `cvars.json`.
+    pub fn reload_global() -> Result<(), String> {
+        let raw = overlay::resolve_json("cvars.json", CVARS_JSON);
+        let cat = CvarsCatalog::load_from_str(&raw)?;
+        *CAT.write().expect("cvars catalog") = Some(Arc::new(cat));
+        Ok(())
     }
 
     pub fn description(&self, cvar: &str) -> Option<&str> {

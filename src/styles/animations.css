@@ -1,0 +1,8 @@
+/*
+  Длительность/кривые для переходов между разделами (Framer Motion в `PageRouteMotion`).
+  При `prefers-reduced-motion` и `data-reduced-motion="on"` анимации отключаются в JS (и класс `.page-enter` в globals.css).
+*/
+:root {
+  --motion-page-duration: 0.18s;
+  --motion-page-ease: cubic-bezier(0.4, 0, 0.2, 1);
+}

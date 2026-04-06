@@ -6,6 +6,61 @@
 
 ## [Unreleased]
 
+### Каталоги данных (GitHub)
+
+- Фоновая синхронизация **`data/*.json`** при старте ( **`catalog_sync`**, If-Modified-Since, бэкап `.bak` ); команды **`catalog_sync_now`** / **`catalog_reload_local`**; событие **`gce-catalog-synced`** обновляет списки режимов/пресетов.
+- Страница **«Диагностика»**: карточка ручной синхронизации и перезагрузки с диска (i18n **`diagnosticsPage.catalog`**).
+- **«Настройки»**: карточка **обновления каталогов данных** (проверка и загрузка JSON с GitHub, перезагрузка с диска; **`settingsPage.catalog`**), общая логика в **`src/lib/catalogSyncUi.ts`**.
+
+### Главная (Tauri)
+
+- Блок **«Статистика»** (`DashboardInsightCards`): при настольной сборке показываются **профили и снимки истории** из SQLite со ссылкой на `/profiles`.
+
+### Веб-сборка
+
+- **`configStore`**: `zustand/middleware` **persist** в **IndexedDB** (`idb-keyval`, ключ `gce-config-v1`) — черновик импорта, режим/пресет, алиасы; в **Tauri** persist отключён (профили в SQLite).
+
+### Документация
+
+- **README**: таблица модулей **`goldsr_cfg_core/src/data/`** и соответствие файлам **`data/*.json`**.
+
+### Фронтенд
+
+- **i18n (RU/EN)**: словари **`src/locales/ru.json`**, **`en.json`**, хук **`useI18n`** и вспомогательные **`getLayoutPage`** / **`getRouteSegmentLabel`** в **`src/lib/i18n.ts`**; язык из **`appStore.locale`** (как в настройках). Переведены оболочка приложения — **Sidebar**, **Header**, **MainLayout** (заголовки и подзаголовки по маршруту, контекстное меню, skip-link, тосты), **Breadcrumbs**, **`pathToBreadcrumbs`** в **`routeMeta`**, **TitleBar** (Tauri).
+
+- **Сборка `goldsr_cfg_core`**: **`goldsr_cfg_core/build.rs`** при компиляции проверяет, что каждый **`data/*.json`** в корне репозитория — валидный JSON (`serde_json`); при ошибке сборка падает с указанием файла.
+
+- **`aliases.json` в Rust**: **`goldsr_cfg_core::data::aliases`** — десериализация секций и записей алиасов через **`AliasDef`** / **`TaggedAlias`** (`plus`/`minus`, `cycle`, `toggle`, `kz_chain`, `simple`, простой `command`); генерация каталога и **`aliases.cfg`** без разбора полей через **`serde_json::Value`** внутри одной записи.
+
+- **Smoke в CI (чеклист §106)**: тест **`smoke_single_cfg_and_modular_pipeline`** в **`goldsr_cfg_core::exporter`** — цепочка **`generate_single_cfg`** → **`generate_modular_files`**; в **`.github/workflows/ci.yml`** краткий комментарий, что это входит в **`npm test`**. Следующая партия шагов **109–118** зафиксирована в **`checklist.md`** (i18n страниц, опционально Playwright, V-07).
+
+- **i18n главной (чеклист §112–113)**: секция **`dashboard`** в **`src/locales/ru.json`** и **`en.json`** — герой, инсайты, готовность, заполненность конфига, быстрые действия, недавние конфиги, блок «Знаете ли вы?»; **`formatRelativeTime`** в **`formatRelativeRu.ts`** (локаль **ru/en**). Тексты советов **`didYouKnowTips`** по-прежнему на RU.
+
+- **Tailwind v4**: корневой **`tailwind.config.ts`** (`darkMode: class`), подключение через **`@config`** в **`src/styles/globals.css`**; дизайн-токены по-прежнему в **`@theme inline`**; в **`components.json`** указан путь к конфигу.
+
+- **`AlertDialog`** (`@radix-ui/react-alert-dialog`): компонент **`src/components/ui/alert-dialog.tsx`**; подтверждения сброса импорта (**`ImportPage`**), удаления профиля и очистки истории (**`ProfilesPage`**). Обычный **`Dialog`** оставлен для форм без разрушительного действия.
+
+- **Формы (react-hook-form + Zod)**: примитивы **`src/components/ui/form.tsx`**, схемы **`src/lib/formSchemas.ts`**. **Настройки** — лимит истории снимков; **Импорт** — URL загрузки и имя при «Сохранить как профиль». Страница **Быстрая настройка** по-прежнему на `Select`/`Switch` без текстовых полей.
+
+- **Поиск по каталогу (режим / пресет)**: **`@radix-ui/react-popover`**, обёртки **`command.tsx`** (cmdk), компоненты **`ModeSearchSelect`** и **`PresetSearchSelect`** — на **главной** (генерация по режиму), **экспорте** и **быстрой настройке** вместо длинного `Select`.
+
+### Фаза 4 (бонусы, старт)
+
+- **«Знаете ли вы?»**: файл **`src/lib/didYouKnowTips.ts`** (15 советов с категориями), блок на **главной** с кнопкой «Ещё совет».
+- **F12**: панель **`DebugOverlay`** (версия, маршрут, Tauri/Web, JS heap в Chromium, User-Agent); в **F1** и **Настройки** добавлена строка в таблицу горячих клавиш.
+
+### Сравнение конфигов
+
+- **TanStack Table** (`@tanstack/react-table`): вкладка **«Таблица»** на **`/compare`** — построчный diff с сортировкой, поиском по тексту, фильтром по категории строки (**`cfgLineCategory`**), пагинацией и экспортом **CSV**. Вид **«Блоки»** и **`DiffPartsVirtual`** сохранены.
+
+### Анимации
+
+- **Framer Motion** (`framer-motion`): **`PageRouteMotion`** — `AnimatePresence` + переход при смене маршрута; при **«Уменьшить анимации»** в настройках или **`useReducedMotion()`** длительность 0. Файл **`src/styles/animations.css`** (токены `--motion-page-*`), импорт в **`globals.css`**; с главной области снят класс **`page-enter`** (анимация теперь через FM).
+
+### Настройки (Tauri, Windows)
+
+- **Авто-поиск папки игры** (`detect_game_installation`): диски **A:–Z:**, типовые пути Steam Half-Life; если не найдено — чтение **`libraryfolders.vdf`** и проверка **`steamapps/common/Half-Life`** в каждой библиотеке.
+
 ### Сборка
 
 - Портабельная упаковка для Windows: **`npm run build:portable`** → `artifacts/GoldSrc-Config-Engineer-<версия>-portable-win64.zip` (`tauri build --no-bundle` + **`scripts/package-portable.ps1`**); установщик — **`npm run build:installer`**. Подробности в [README](README.md#сборка-v3-tauri).

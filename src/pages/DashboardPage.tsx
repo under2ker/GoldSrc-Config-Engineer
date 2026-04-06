@@ -24,17 +24,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { ModeSearchSelect } from "@/components/catalog/CatalogSearchSelect";
+import { interpolate, useI18n } from "@/lib/i18n";
 import { pageCaptionClass, pageLeadClass, pageOverlineClass, pageShellClass } from "@/lib/layoutTokens";
 import { cfgConfigParsedSchema } from "@/types/api";
 
 export function DashboardPage() {
+  const { t } = useI18n();
   const [generatedPreview, setGeneratedPreview] = useState<string | null>(null);
   const [lastRawCfg, setLastRawCfg] = useState<string | null>(null);
   const [lastGenLabel, setLastGenLabel] = useState<string | null>(null);
@@ -115,8 +111,8 @@ export function DashboardPage() {
   const currentModeLabel = currentMode
     ? `${currentMode.name_ru} (${currentMode.name_en})`
     : loaded
-      ? "—"
-      : "Загрузка…";
+      ? t("dashboard.dash")
+      : t("dashboard.loading");
 
   const scrollToGenerate = useCallback(() => {
     document.getElementById("dashboard-generate")?.scrollIntoView({ behavior: "smooth" });
@@ -182,7 +178,7 @@ export function DashboardPage() {
         setLastGenLabel(r.label);
         setGeneratedPreview(`// ${r.label}\n${r.content}`);
         setSaveNote(null);
-        toast.success("Конфиг сгенерирован", { description: r.label });
+        toast.success(t("dashboard.toast.configGenerated"), { description: r.label });
         if (isTauri()) {
           try {
             const snapshot = await exportConfigSnapshot("mode", modeId, {
@@ -204,10 +200,10 @@ export function DashboardPage() {
         setLastGenLabel(null);
         const msg = String(e);
         setGenError(msg);
-        toast.error("Ошибка генерации", { description: msg });
+        toast.error(t("dashboard.toast.genError"), { description: msg });
       })
       .finally(() => setGenLoading(false));
-  }, [modeId]);
+  }, [modeId, t]);
 
   return (
     <div className={pageShellClass}>
@@ -240,6 +236,11 @@ export function DashboardPage() {
         lastSaved={recent[0] ?? null}
         hasDraft={!!lastRawCfg}
         draftSummary={lastGenLabel ?? undefined}
+        sqliteStats={
+          isTauri()
+            ? { profileCount, historyCount: historySnapshotCount }
+            : null
+        }
       />
 
       <DashboardGameTip />
@@ -249,30 +250,31 @@ export function DashboardPage() {
           <Card className="border-border/80 bg-muted/10 shadow-sm">
             <CardContent className="flex flex-col gap-3 py-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <p className="text-sm font-medium">Локальные профили</p>
+                <p className="text-sm font-medium">{t("dashboard.profilesCard.title")}</p>
                 <p className={pageCaptionClass}>
-                  Сохранённые наборы (импорт → «Сохранить как профиль»):{" "}
-                  <span className="font-medium text-foreground">{profileCount}</span>
+                  {interpolate(t("dashboard.profilesCard.description"), { count: String(profileCount) })}
                 </p>
               </div>
               <Button type="button" variant="secondary" size="sm" asChild>
-                <Link to="/profiles">Открыть профили</Link>
+                <Link to="/profiles">{t("dashboard.profilesCard.cta")}</Link>
               </Button>
             </CardContent>
           </Card>
           <Card className="border-border/80 bg-muted/10 shadow-sm">
             <CardContent className="flex flex-col gap-3 py-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <p className="text-sm font-medium">История снимков</p>
+                <p className="text-sm font-medium">{t("dashboard.historyCard.title")}</p>
                 <p className={pageCaptionClass}>
-                  Записей в локальной истории:{" "}
-                  <span className="font-medium text-foreground">
-                    {historySnapshotCount === null ? "…" : historySnapshotCount}
-                  </span>
+                  {interpolate(t("dashboard.historyCard.description"), {
+                    count:
+                      historySnapshotCount === null
+                        ? t("dashboard.ellipsis")
+                        : String(historySnapshotCount),
+                  })}
                 </p>
               </div>
               <Button type="button" variant="secondary" size="sm" asChild>
-                <Link to="/profiles">К списку и истории</Link>
+                <Link to="/profiles">{t("dashboard.historyCard.cta")}</Link>
               </Button>
             </CardContent>
           </Card>
@@ -283,41 +285,35 @@ export function DashboardPage() {
 
       <Card id="dashboard-generate" className="scroll-mt-4 border-border/80 shadow-sm">
         <CardHeader className="pb-4">
-          <CardTitle className="text-lg">Генерация по режиму</CardTitle>
+          <CardTitle className="text-lg">{t("dashboard.generate.title")}</CardTitle>
           <CardDescription>
-            Выберите режим и сохраните результат как <code className="text-xs">.cfg</code> для игры.
+            {t("dashboard.generate.descriptionBefore")}{" "}
+            <code className="text-xs">.cfg</code> {t("dashboard.generate.descriptionAfter")}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {error ? (
-            <p className="text-sm text-destructive">Список режимов не загрузился: {error}</p>
+            <p className="text-sm text-destructive">
+              {interpolate(t("dashboard.generate.modesLoadError"), { error })}
+            </p>
           ) : null}
 
           <div className="flex flex-col gap-4 lg:flex-row lg:items-end">
             <div className="min-w-0 flex-1 space-y-2">
               <Label htmlFor="dash-mode" className={pageOverlineClass}>
-                Режим генерации
+                {t("dashboard.generate.modeLabel")}
               </Label>
-              <Select
+              <ModeSearchSelect
+                id="dash-mode"
+                className="w-full"
+                modes={modes}
                 value={modeId}
                 onValueChange={(v) => {
                   setModeId(v);
                   writeLastModeId(v);
                 }}
                 disabled={!loaded || modes.length === 0}
-              >
-                <SelectTrigger id="dash-mode" className="w-full">
-                  <SelectValue placeholder="Выберите режим" />
-                </SelectTrigger>
-                <SelectContent>
-                  {modes.map((m) => (
-                    <SelectItem key={m.id} value={m.id}>
-                      {m.name_ru}{" "}
-                      <span className="text-muted-foreground">({m.name_en})</span>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              />
             </div>
             <div className="flex flex-wrap gap-2">
               <Button
@@ -328,7 +324,7 @@ export function DashboardPage() {
                 onClick={handleGenerate}
                 className="min-w-[11rem]"
               >
-                Сгенерировать .cfg
+                {t("dashboard.generate.generateBtn")}
               </Button>
               <Button
                 type="button"
@@ -344,19 +340,19 @@ export function DashboardPage() {
                     if (p) {
                       addRecentConfig({ path: p, modeLabel: modeRu });
                       refreshRecent();
-                      setSaveNote(`Сохранено: ${p}`);
-                      toast.success("Файл сохранён", { description: p });
+                      setSaveNote(interpolate(t("dashboard.generate.savedNote"), { path: p }));
+                      toast.success(t("dashboard.toast.fileSaved"), { description: p });
                     } else {
-                      setSaveNote("Сохранение отменено.");
-                      toast.message("Сохранение отменено");
+                      setSaveNote(t("dashboard.toast.saveCancelled"));
+                      toast.message(t("dashboard.toast.saveCancelled"));
                     }
                   });
                 }}
               >
-                Сохранить как…
+                {t("dashboard.generate.saveAs")}
               </Button>
               <Button type="button" variant="outline" asChild>
-                <Link to="/import">Импорт .cfg…</Link>
+                <Link to="/import">{t("dashboard.generate.importLink")}</Link>
               </Button>
             </div>
           </div>

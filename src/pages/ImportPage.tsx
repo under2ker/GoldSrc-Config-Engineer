@@ -1,4 +1,6 @@
 import { useCallback, useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Link } from "react-router-dom";
 import { isTauri } from "@tauri-apps/api/core";
 import { toast } from "sonner";
@@ -20,6 +22,16 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -30,31 +42,20 @@ import {
 import { CfgTextPreview } from "@/components/common/CfgTextPreview";
 import { EmptyState } from "@/components/common/EmptyState";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { pageCaptionClass, pageLeadClass, pageShellClass } from "@/lib/layoutTokens";
 import { addRecentConfig } from "@/lib/recentConfigs";
 import { useConfigStore } from "@/stores/configStore";
 import { useProfileStore } from "@/stores/profileStore";
 import type { CfgConfigParsed } from "@/types/api";
 import { cn } from "@/lib/utils";
-import { z } from "zod";
-
-const importUrlSchema = z
-  .string()
-  .trim()
-  .min(1, "Введите ссылку")
-  .refine(
-    (s) => {
-      try {
-        const u = new URL(s);
-        return u.protocol === "http:" || u.protocol === "https:";
-      } catch {
-        return false;
-      }
-    },
-    { message: "Нужна ссылка http:// или https://" },
-  );
+import {
+  type ImportUrlFormValues,
+  importUrlFormSchema,
+  type SaveProfileNameFormValues,
+  saveProfileNameSchema,
+} from "@/lib/formSchemas";
 
 const MAX_IMPORT_BYTES = 512 * 1024;
 
@@ -67,10 +68,20 @@ export function ImportPage() {
   const [dragActive, setDragActive] = useState(false);
   const [parsed, setParsed] = useState<CfgConfigParsed | null>(null);
   const [saveProfileOpen, setSaveProfileOpen] = useState(false);
-  const [profileName, setProfileName] = useState("");
   const [saveProfileBusy, setSaveProfileBusy] = useState(false);
-  const [importUrl, setImportUrl] = useState("");
   const [urlBusy, setUrlBusy] = useState(false);
+
+  const importUrlForm = useForm<ImportUrlFormValues>({
+    resolver: zodResolver(importUrlFormSchema),
+    defaultValues: { importUrl: "" },
+    mode: "onSubmit",
+  });
+
+  const saveProfileForm = useForm<SaveProfileNameFormValues>({
+    resolver: zodResolver(saveProfileNameSchema),
+    defaultValues: { profileName: "" },
+    mode: "onSubmit",
+  });
 
   const reset = useCallback(() => {
     setPath(null);
@@ -126,14 +137,14 @@ export function ImportPage() {
     }
   }, []);
 
-  async function onSaveProfile() {
-    if (!parsed || !profileName.trim()) return;
+  async function onSaveProfile(values: SaveProfileNameFormValues) {
+    if (!parsed) return;
     setSaveProfileBusy(true);
     try {
-      await profileSave(profileName.trim(), JSON.stringify(parsed));
+      await profileSave(values.profileName, JSON.stringify(parsed));
       toast.success("Профиль сохранён");
       setSaveProfileOpen(false);
-      setProfileName("");
+      saveProfileForm.reset({ profileName: "" });
       await useProfileStore.getState().refreshProfiles();
     } catch (e: unknown) {
       toast.error("Не удалось сохранить", { description: String(e) });
@@ -157,14 +168,8 @@ export function ImportPage() {
     }
   }
 
-  async function onFetchUrl() {
-    const parsed = importUrlSchema.safeParse(importUrl);
-    if (!parsed.success) {
-      const msg = parsed.error.issues[0]?.message ?? "Некорректный URL";
-      toast.error("Ссылка", { description: msg });
-      return;
-    }
-    const u = parsed.data;
+  async function onFetchUrl(values: ImportUrlFormValues) {
+    const u = values.importUrl;
     if (!isTauri()) return;
     setUrlBusy(true);
     try {
@@ -384,90 +389,117 @@ export function ImportPage() {
               текст конфига, а не HTML-страница.
             </CardDescription>
           </CardHeader>
-          <CardContent className="flex flex-col gap-3 sm:flex-row sm:items-end">
-            <div className="min-w-0 flex-1 space-y-2">
-              <Label htmlFor="import-url">URL</Label>
-              <Input
-                id="import-url"
-                type="url"
-                autoComplete="url"
-                placeholder="https://…/config.cfg"
-                value={importUrl}
-                onChange={(e) => setImportUrl(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") void onFetchUrl();
-                }}
-              />
-            </div>
-            <div className="flex flex-wrap gap-2">
-              <Button type="button" disabled={urlBusy || busy} onClick={() => void onFetchUrl()}>
-                {urlBusy ? <Loader2 className="size-4 animate-spin" /> : null}
-                Загрузить
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                disabled={!importUrl.trim() || urlBusy}
-                onClick={() => setImportUrl("")}
+          <CardContent>
+            <Form {...importUrlForm}>
+              <form
+                className="flex flex-col gap-3 sm:flex-row sm:items-end"
+                onSubmit={importUrlForm.handleSubmit((v) => void onFetchUrl(v))}
               >
-                Очистить поле
-              </Button>
-            </div>
+                <FormField
+                  control={importUrlForm.control}
+                  name="importUrl"
+                  render={({ field }) => (
+                    <FormItem className="min-w-0 flex-1">
+                      <FormLabel>URL</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          id="import-url"
+                          type="url"
+                          autoComplete="url"
+                          placeholder="https://…/config.cfg"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <div className="flex flex-wrap gap-2">
+                  <Button type="submit" disabled={urlBusy || busy}>
+                    {urlBusy ? <Loader2 className="size-4 animate-spin" /> : null}
+                    Загрузить
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    disabled={urlBusy || !importUrlForm.watch("importUrl").trim()}
+                    onClick={() => importUrlForm.reset({ importUrl: "" })}
+                  >
+                    Очистить поле
+                  </Button>
+                </div>
+              </form>
+            </Form>
           </CardContent>
         </Card>
       ) : null}
 
-      <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Сбросить импорт?</DialogTitle>
-            <DialogDescription>
+      <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Сбросить импорт?</AlertDialogTitle>
+            <AlertDialogDescription>
               Текущий путь, текст и предупреждения будут очищены. Файл на диске не изменяется.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter className="gap-2 sm:gap-0">
-            <Button type="button" variant="outline" onClick={() => setConfirmOpen(false)}>
-              Отмена
-            </Button>
-            <Button
-              type="button"
-              variant="destructive"
-              onClick={() => {
-                reset();
-                setConfirmOpen(false);
-              }}
-            >
-              Сбросить
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="gap-2 sm:gap-0">
+            <AlertDialogCancel>Отмена</AlertDialogCancel>
+            <AlertDialogAction asChild>
+              <Button type="button" variant="destructive" onClick={() => reset()}>
+                Сбросить
+              </Button>
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
-      <Dialog open={saveProfileOpen} onOpenChange={setSaveProfileOpen}>
+      <Dialog
+        open={saveProfileOpen}
+        onOpenChange={(open) => {
+          setSaveProfileOpen(open);
+          if (open) saveProfileForm.reset({ profileName: "" });
+        }}
+      >
         <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Сохранить как профиль</DialogTitle>
-            <DialogDescription>Имя для списка на странице «Профили». Данные только на этом устройстве.</DialogDescription>
-          </DialogHeader>
-          <Input
-            value={profileName}
-            onChange={(e) => setProfileName(e.target.value)}
-            placeholder="Например: мой конфиг с сервера"
-            autoFocus
-          />
-          <DialogFooter className="gap-2 sm:gap-0">
-            <Button type="button" variant="outline" onClick={() => setSaveProfileOpen(false)}>
-              Отмена
-            </Button>
-            <Button
-              type="button"
-              loading={saveProfileBusy}
-              disabled={!profileName.trim() || !parsed}
-              onClick={() => void onSaveProfile()}
+          <Form {...saveProfileForm}>
+            <form
+              className="space-y-4"
+              onSubmit={saveProfileForm.handleSubmit((v) => void onSaveProfile(v))}
             >
-              Сохранить
-            </Button>
-          </DialogFooter>
+              <DialogHeader>
+                <DialogTitle>Сохранить как профиль</DialogTitle>
+                <DialogDescription>
+                  Имя для списка на странице «Профили». Данные только на этом устройстве.
+                </DialogDescription>
+              </DialogHeader>
+              <FormField
+                control={saveProfileForm.control}
+                name="profileName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="sr-only">Имя профиля</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        placeholder="Например: мой конфиг с сервера"
+                        autoFocus
+                        autoComplete="off"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <DialogFooter className="gap-2 sm:gap-0">
+                <Button type="button" variant="outline" onClick={() => setSaveProfileOpen(false)}>
+                  Отмена
+                </Button>
+                <Button type="submit" loading={saveProfileBusy} disabled={!parsed}>
+                  Сохранить
+                </Button>
+              </DialogFooter>
+            </form>
+          </Form>
         </DialogContent>
       </Dialog>
     </div>

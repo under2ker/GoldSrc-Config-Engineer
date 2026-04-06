@@ -4,6 +4,9 @@ version = "0.1.0"
 edition = "2021"
 description = "Core logic and game data for GoldSrc Config Engineer (no UI)"
 
+[build-dependencies]
+serde_json = "1"
+
 [dependencies]
 chrono = { version = "0.4", default-features = false, features = ["clock", "std"] }
 regex = "1"

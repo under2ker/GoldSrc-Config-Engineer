@@ -28,5 +28,6 @@ jobs:
       - name: npm ci
         run: npm ci
 
+      # Включает `cargo test --workspace`: в т.ч. smoke «single .cfg + модульный набор» (`goldsr_cfg_core::exporter::tests::smoke_single_cfg_and_modular_pipeline`).
       - name: npm test
         run: npm test

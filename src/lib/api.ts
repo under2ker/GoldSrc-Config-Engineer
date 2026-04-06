@@ -23,6 +23,8 @@ import {
   historyListSchema,
   aliasCatalogItemSchema,
   type AliasCatalogItem,
+  catalogSyncReportSchema,
+  type CatalogSyncReport,
 } from "../types/api";
 
 export async function greet(name: string): Promise<GreetResponse> {
@@ -201,6 +203,17 @@ export async function detectGameInstallation(): Promise<GameDetectResult> {
 export async function getAppPathsInfo(): Promise<AppPathsInfo> {
   const raw = await invoke<unknown>("get_app_paths_info");
   return appPathsInfoSchema.parse(raw);
+}
+
+/** Проверка обновлений JSON на GitHub (If-Modified-Since), запись с бэкапом, применение в `goldsr_cfg_core`. */
+export async function catalogSyncNow(): Promise<CatalogSyncReport> {
+  const raw = await invoke<unknown>("catalog_sync_now");
+  return catalogSyncReportSchema.parse(raw);
+}
+
+/** Перечитать JSON из локальной папки каталога (без сети). */
+export async function catalogReloadLocal(): Promise<void> {
+  await invoke<void>("catalog_reload_local");
 }
 
 export async function deployModularFiles(targetDir: string, files: ModularFile[]): Promise<void> {

@@ -1,5 +1,7 @@
 @import "tailwindcss";
+@config "../../tailwind.config.ts";
 @import "shadcn/tailwind.css";
+@import "./animations.css";
 
 /*
   Design system (tokens)

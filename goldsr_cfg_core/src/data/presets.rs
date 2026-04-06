@@ -1,5 +1,6 @@
 use serde::Deserialize;
 
+use crate::data::overlay;
 use crate::ProPresetSummary;
 
 pub(crate) const PRESETS_JSON_STR: &str = include_str!(concat!(
@@ -16,8 +17,9 @@ struct PresetEntry {
 
 /// Краткий список про-пресетов из `data/presets.json`.
 pub fn list_pro_preset_summaries() -> Result<Vec<ProPresetSummary>, String> {
+    let raw = overlay::resolve_json("presets.json", PRESETS_JSON_STR);
     let map: std::collections::HashMap<String, PresetEntry> =
-        serde_json::from_str(PRESETS_JSON_STR).map_err(|e| e.to_string())?;
+        serde_json::from_str(&raw).map_err(|e| e.to_string())?;
     let mut out: Vec<ProPresetSummary> = map
         .into_iter()
         .map(|(id, e)| ProPresetSummary {

@@ -18,7 +18,7 @@ pub struct ModularFile {
 /// Собрать набор относительных путей и содержимого для записи в папку `cstrike/` или аналог.
 pub fn generate_modular_files(cfg: &CfgConfig) -> Result<Vec<ModularFile>, String> {
     let catalog = CvarsCatalog::global();
-    let categorized = categorize_settings(catalog, &cfg.settings);
+    let categorized = categorize_settings(catalog.as_ref(), &cfg.settings);
     let now = Local::now().format("%Y-%m-%d %H:%M").to_string();
     let mut files: Vec<ModularFile> = Vec::new();
     let mut exec_lines: Vec<String> = Vec::new();
@@ -59,7 +59,7 @@ pub fn generate_modular_files(cfg: &CfgConfig) -> Result<Vec<ModularFile>, Strin
         lines.push(format!("// {now}"));
         lines.push(format!("// === {label} ==="));
         for (cvar, value) in cat_settings {
-            lines.push(fmt_cvar_line(catalog, cvar, value, 40));
+            lines.push(fmt_cvar_line(catalog.as_ref(), cvar, value, 40));
         }
         files.push(ModularFile {
             relative_path: rel.clone(),
@@ -85,7 +85,7 @@ pub fn generate_modular_files(cfg: &CfgConfig) -> Result<Vec<ModularFile>, Strin
         lines.push(format!("// {now}"));
         lines.push(format!("// === {} ===", cat_key.to_uppercase()));
         for (cvar, value) in cat_settings {
-            lines.push(fmt_cvar_line(catalog, cvar, value, 40));
+            lines.push(fmt_cvar_line(catalog.as_ref(), cvar, value, 40));
         }
         files.push(ModularFile {
             relative_path: rel.clone(),
@@ -169,8 +169,30 @@ pub fn generate_modular_files(cfg: &CfgConfig) -> Result<Vec<ModularFile>, Strin
 #[cfg(test)]
 mod tests {
     use crate::cfg_config::CfgConfig;
+    use crate::generator::generate_single_cfg;
 
     use super::generate_modular_files;
+
+    /// Цепочка из п. 106 чеклиста: одна сборка `.cfg` + модульный набор (без UI/Tauri).
+    #[test]
+    fn smoke_single_cfg_and_modular_pipeline() {
+        let mut cfg = CfgConfig::default();
+        cfg.mode_key = Some("classic".into());
+        let single = generate_single_cfg(&cfg).expect("generate_single_cfg");
+        assert!(
+            single.len() > 200,
+            "expected non-trivial single .cfg, got {} bytes",
+            single.len()
+        );
+        let files = generate_modular_files(&cfg).expect("generate_modular_files");
+        assert!(
+            files.iter().any(|f| f.relative_path == "autoexec.cfg"),
+            "modular set should include autoexec.cfg, got: {:?}",
+            files.iter().map(|f| &f.relative_path).collect::<Vec<_>>()
+        );
+        let total: usize = files.iter().map(|f| f.content.len()).sum();
+        assert!(total > 500, "modular output too small: {} bytes", total);
+    }
 
     #[test]
     fn modular_set_includes_buyscripts_cfg() {

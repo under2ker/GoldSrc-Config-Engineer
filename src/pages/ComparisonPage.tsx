@@ -18,10 +18,12 @@ import {
 import { ArrowLeftRight, Copy, Download } from "lucide-react";
 import { openCfgFile } from "@/lib/cfgFiles";
 import { diffLinesLazy } from "@/lib/diffLazy";
+import { ComparisonDiffTable } from "@/components/compare/ComparisonDiffTable";
 import { DiffPartsVirtual, diffNeedsVirtualization } from "@/components/common/DiffPartsVirtual";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { pageCaptionClass, pageLeadClass, pageShellClass } from "@/lib/layoutTokens";
 import { cn } from "@/lib/utils";
 
@@ -340,26 +342,39 @@ export function ComparisonPage() {
             <div className="flex h-[min(28rem,50vh)] items-center justify-center rounded-md border bg-muted/15">
               <p className="text-sm text-muted-foreground">Нет данных для сравнения или файлы совпадают.</p>
             </div>
-          ) : diffNeedsVirtualization(parts) ? (
-            <DiffPartsVirtual parts={parts} />
           ) : (
-            <ScrollArea className="h-[min(28rem,50vh)] rounded-md border bg-muted/15">
-              <div className="p-3 font-mono text-xs leading-relaxed">
-                {parts.map((part, i) => (
-                  <pre
-                    key={i}
-                    className={cn(
-                      "mb-1 overflow-x-auto whitespace-pre-wrap break-words rounded px-2 py-1",
-                      part.added && "bg-emerald-500/15 text-emerald-900 dark:text-emerald-100",
-                      part.removed && "bg-red-500/15 text-red-900 dark:text-red-100",
-                      !part.added && !part.removed && "text-foreground/85",
-                    )}
-                  >
-                    {part.value}
-                  </pre>
-                ))}
-              </div>
-            </ScrollArea>
+            <Tabs defaultValue="blocks" className="w-full">
+              <TabsList className="mb-3 w-full justify-start sm:w-auto">
+                <TabsTrigger value="blocks">Блоки</TabsTrigger>
+                <TabsTrigger value="table">Таблица</TabsTrigger>
+              </TabsList>
+              <TabsContent value="blocks" className="mt-0">
+                {diffNeedsVirtualization(parts) ? (
+                  <DiffPartsVirtual parts={parts} />
+                ) : (
+                  <ScrollArea className="h-[min(28rem,50vh)] rounded-md border bg-muted/15">
+                    <div className="p-3 font-mono text-xs leading-relaxed">
+                      {parts.map((part, i) => (
+                        <pre
+                          key={i}
+                          className={cn(
+                            "mb-1 overflow-x-auto whitespace-pre-wrap break-words rounded px-2 py-1",
+                            part.added && "bg-emerald-500/15 text-emerald-900 dark:text-emerald-100",
+                            part.removed && "bg-red-500/15 text-red-900 dark:text-red-100",
+                            !part.added && !part.removed && "text-foreground/85",
+                          )}
+                        >
+                          {part.value}
+                        </pre>
+                      ))}
+                    </div>
+                  </ScrollArea>
+                )}
+              </TabsContent>
+              <TabsContent value="table" className="mt-0">
+                <ComparisonDiffTable parts={parts} />
+              </TabsContent>
+            </Tabs>
           )}
         </CardContent>
       </Card>

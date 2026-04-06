@@ -84,6 +84,16 @@ export const appPathsInfoSchema = z.object({
 
 export type AppPathsInfo = z.infer<typeof appPathsInfoSchema>;
 
+/** Отчёт `catalog_sync_now` (Tauri): синхронизация `data/*.json` с GitHub. */
+export const catalogSyncReportSchema = z.object({
+  checked: z.number(),
+  updated: z.number(),
+  skippedNotModified: z.number(),
+  errors: z.array(z.string()),
+});
+
+export type CatalogSyncReport = z.infer<typeof catalogSyncReportSchema>;
+
 /** Снимок `CfgConfig` после разбора `.cfg` (совпадает с `goldsr_cfg_core::CfgConfig`). */
 export const cfgConfigParsedSchema = z.object({
   settings: z.record(z.string(), z.string()),

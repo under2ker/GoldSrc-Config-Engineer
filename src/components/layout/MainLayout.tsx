@@ -1,14 +1,14 @@
-import { Suspense, useEffect, useState } from "react";
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { isTauri } from "@tauri-apps/api/core";
 import { AppCommandPalette } from "@/components/layout/AppCommandPalette";
-import { AppErrorBoundary } from "@/components/layout/AppErrorBoundary";
 import { Header } from "@/components/layout/Header";
 import { KeyboardShortcutsDialog } from "@/components/layout/KeyboardShortcutsDialog";
-import { PageLoading } from "@/components/layout/PageLoading";
 import { Sidebar } from "@/components/layout/Sidebar";
+import { DebugOverlay } from "@/components/layout/DebugOverlay";
+import { PageRouteMotion } from "@/components/layout/PageRouteMotion";
 import { SplashScreen } from "@/components/layout/SplashScreen";
 import { TitleBar } from "@/components/layout/TitleBar";
 import {
@@ -20,58 +20,42 @@ import {
 } from "@/components/ui/context-menu";
 import { readAliasPrefs, writeAliasPrefs } from "@/lib/aliasPrefs";
 import { logApp } from "@/lib/appLogger";
+import { getLayoutPage, useI18n } from "@/lib/i18n";
 import { GCE_OPEN_HELP } from "@/lib/uiEvents";
+import { useCatalogStore } from "@/stores/catalogStore";
 import { useConfigStore } from "@/stores/configStore";
 import { useProfileStore } from "@/stores/profileStore";
-
-const titles: Record<string, string> = {
-  "/dashboard": "Главная",
-  "/quick-setup": "Быстрая настройка",
-  "/modes": "Режимы",
-  "/presets": "Про-пресеты",
-  "/crosshair": "Прицел",
-  "/sensitivity": "Чувствительность мыши",
-  "/compare": "Сравнение конфигов",
-  "/export": "Экспорт",
-  "/import": "Импорт",
-  "/launch-options": "Параметры запуска",
-  "/preview": "Просмотр",
-  "/diagnostics": "Диагностика",
-  "/settings": "Настройки",
-  "/profiles": "Профили",
-  "/aliases": "Алиасы",
-};
-
-/** Подзаголовок шапки (visual set §3.2.1) — кратко о назначении раздела. */
-const pageSubtitles: Partial<Record<string, string>> = {
-  "/dashboard": "Обзор, быстрые действия и недавние .cfg",
-  "/quick-setup": "Мастер: режим, пресет, генерация и сохранение",
-  "/modes": "Каталог режимов и генерация одного .cfg",
-  "/presets": "Про-пресеты по командам и ролям",
-  "/crosshair": "Превью прицела и ориентиры для CVAR",
-  "/sensitivity": "См на 360° и индекс для сравнения с другими конфигами",
-  "/compare": "Построчное сравнение двух текстов конфигов",
-  "/export": "Один файл или модульный набор в папку",
-  "/import": "Разбор .cfg и черновик для редактора",
-  "/launch-options": "Параметры запуска Steam / hl.exe",
-  "/preview": "Подсветка синтаксиса, текст не уходит в сеть",
-  "/diagnostics": "Проверка окружения и журнал сессии",
-  "/settings": "Тема, язык, данные приложения и папка игры",
-  "/profiles": "Локальные профили и история снимков конфигурации",
-  "/aliases": "Пресеты алиасов и генерация aliases.cfg",
-};
 
 export function MainLayout() {
   const loc = useLocation();
   const navigate = useNavigate();
-  const title = titles[loc.pathname] ?? "GoldSrc Config Engineer";
-  const subtitle = pageSubtitles[loc.pathname];
+  const { t, locale } = useI18n();
+  const page = getLayoutPage(locale, loc.pathname);
+  const title = page?.title ?? t("layout.appName");
+  const subtitle = page?.subtitle;
   const [commandOpen, setCommandOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
+  const [debugOpen, setDebugOpen] = useState(false);
 
   useEffect(() => {
     logApp("info", `Раздел: ${loc.pathname}`);
   }, [loc.pathname]);
+
+  /** После фоновой синхронизации каталогов JSON с GitHub — обновить режимы/пресеты в UI. */
+  useEffect(() => {
+    if (!isTauri()) return;
+    let unlisten: (() => void) | undefined;
+    void import("@tauri-apps/api/event").then(({ listen }) => {
+      void listen("gce-catalog-synced", () => {
+        void useCatalogStore.getState().load();
+      }).then((fn) => {
+        unlisten = fn;
+      });
+    });
+    return () => {
+      unlisten?.();
+    };
+  }, []);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -89,8 +73,14 @@ export function MainLayout() {
             void w.setFullscreen(!fs);
           });
         } else {
-          toast.message("Полноэкранный режим (F11) доступен в программе для Windows / macOS");
+          toast.message(t("toast.fullscreen"));
         }
+        return;
+      }
+
+      if (e.key === "F12") {
+        e.preventDefault();
+        setDebugOpen((o) => !o);
         return;
       }
 
@@ -222,13 +212,13 @@ export function MainLayout() {
       if (k === "s" && !e.shiftKey) {
         e.preventDefault();
         navigate("/export");
-        toast.message("Экспорт .cfg", { description: "Сформируйте файл и нажмите «Сохранить как…»." });
+        toast.message(t("toast.exportTitle"), { description: t("toast.exportDesc") });
       }
     };
 
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
-  }, [navigate]);
+  }, [navigate, t]);
 
   useEffect(() => {
     const openHelp = () => setHelpOpen(true);
@@ -275,7 +265,7 @@ export function MainLayout() {
         href="#main-content"
         className="sr-only focus:not-sr-only focus:absolute focus:left-3 focus:top-12 focus:z-[80] focus:rounded-md focus:bg-primary focus:px-3 focus:py-2 focus:text-sm focus:font-medium focus:text-primary-foreground focus:shadow-md"
       >
-        К основному содержимому
+        {t("main.skipToContent")}
       </a>
       <TitleBar />
       <div className="flex min-h-0 min-w-0 flex-1 overflow-x-auto overflow-y-hidden">
@@ -287,14 +277,9 @@ export function MainLayout() {
             <ContextMenuTrigger asChild>
           <main
             id="main-content"
-            key={loc.pathname}
-            className="page-enter min-h-0 flex-1 scroll-mt-0 overflow-auto p-[var(--space-page,1.5rem)]"
+            className="min-h-0 flex-1 scroll-mt-0 overflow-auto p-[var(--space-page,1.5rem)]"
           >
-            <Suspense fallback={<PageLoading />}>
-              <AppErrorBoundary>
-                <Outlet />
-              </AppErrorBoundary>
-            </Suspense>
+            <PageRouteMotion />
           </main>
             </ContextMenuTrigger>
             <ContextMenuContent className="min-w-[200px]">
@@ -303,77 +288,77 @@ export function MainLayout() {
                   navigate("/dashboard");
                 }}
               >
-                Главная
+                {t("contextMenu.home")}
               </ContextMenuItem>
               <ContextMenuItem
                 onSelect={() => {
                   navigate("/quick-setup");
                 }}
               >
-                Быстрая настройка…
+                {t("contextMenu.quickSetup")}
               </ContextMenuItem>
               <ContextMenuItem
                 onSelect={() => {
                   navigate("/modes");
                 }}
               >
-                Режимы…
+                {t("contextMenu.modes")}
               </ContextMenuItem>
               <ContextMenuItem
                 onSelect={() => {
                   navigate("/compare");
                 }}
               >
-                Сравнение конфигов…
+                {t("contextMenu.compare")}
               </ContextMenuItem>
               <ContextMenuItem
                 onSelect={() => {
                   navigate("/presets");
                 }}
               >
-                Про-пресеты…
+                {t("contextMenu.presets")}
               </ContextMenuItem>
               <ContextMenuItem
                 onSelect={() => {
                   navigate("/crosshair");
                 }}
               >
-                Прицел…
+                {t("contextMenu.crosshair")}
               </ContextMenuItem>
               <ContextMenuItem
                 onSelect={() => {
                   navigate("/sensitivity");
                 }}
               >
-                Чувствительность мыши…
+                {t("contextMenu.sensitivity")}
               </ContextMenuItem>
               <ContextMenuItem
                 onSelect={() => {
                   navigate("/export");
                 }}
               >
-                Экспорт…
+                {t("contextMenu.export")}
               </ContextMenuItem>
               <ContextMenuItem
                 onSelect={() => {
                   navigate("/import");
                 }}
               >
-                Импорт…
+                {t("contextMenu.import")}
               </ContextMenuItem>
               <ContextMenuItem
                 onSelect={() => {
                   navigate("/launch-options");
                 }}
               >
-                Параметры запуска Steam…
+                {t("contextMenu.launchOptions")}
               </ContextMenuItem>
               <ContextMenuItem
                 onSelect={() => {
                   navigate("/settings");
                 }}
               >
-                Настройки…
+                {t("contextMenu.settings")}
               </ContextMenuItem>
               <ContextMenuSeparator />
               <ContextMenuItem
@@ -381,14 +366,14 @@ export function MainLayout() {
                   setCommandOpen(true);
                 }}
               >
-                Палитра команд
+                {t("contextMenu.commandPalette")}
               </ContextMenuItem>
               <ContextMenuItem
                 onSelect={() => {
                   setHelpOpen(true);
                 }}
               >
-                Справка (F1)
+                {t("contextMenu.help")}
               </ContextMenuItem>
             </ContextMenuContent>
           </ContextMenu>
@@ -404,6 +389,7 @@ export function MainLayout() {
         }}
       />
       <KeyboardShortcutsDialog open={helpOpen} onOpenChange={setHelpOpen} />
+      <DebugOverlay open={debugOpen} onOpenChange={setDebugOpen} pathname={loc.pathname} />
       <SplashScreen />
     </div>
   );

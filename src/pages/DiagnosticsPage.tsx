@@ -10,6 +10,7 @@ import {
   historyCount,
   ping,
 } from "@/lib/api";
+import { catalogReloadLocalWithUi, catalogSyncNowWithUi } from "@/lib/catalogSyncUi";
 import {
   clearLogEntries,
   GCE_APP_LOG_EVENT,
@@ -20,12 +21,15 @@ import {
 import { diffLinesLazy } from "@/lib/diffLazy";
 import { loadRecentConfigs } from "@/lib/recentConfigs";
 import { useCatalogStore } from "@/stores/catalogStore";
+import { CatalogSyncSection } from "@/components/catalog/CatalogSyncSection";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { pageLeadClass, pageShellNarrowClass } from "@/lib/layoutTokens";
+import { useI18n } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
+import type { CatalogSyncReport } from "@/types/api";
 
 type CheckRow = {
   id: string;
@@ -43,9 +47,12 @@ function formatLogTime(t: number): string {
 }
 
 export function DiagnosticsPage() {
+  const { t } = useI18n();
   const [rows, setRows] = useState<CheckRow[]>([]);
   const [running, setRunning] = useState(false);
   const [logLines, setLogLines] = useState<AppLogEntry[]>(() => getLogEntries());
+  const [catalogBusy, setCatalogBusy] = useState<"sync" | "reload" | null>(null);
+  const [lastCatalogReport, setLastCatalogReport] = useState<CatalogSyncReport | null>(null);
 
   const run = useCallback(async () => {
     setRunning(true);
@@ -309,6 +316,45 @@ export function DiagnosticsPage() {
           </ul>
         </CardContent>
       </Card>
+
+      <CatalogSyncSection
+        title={t("diagnosticsPage.catalog.title")}
+        description={t("diagnosticsPage.catalog.description")}
+        t={t}
+        busy={catalogBusy}
+        lastReport={lastCatalogReport}
+        showActions={isTauri()}
+        footerNote={
+          !isTauri() ? (
+            <p className="text-sm text-muted-foreground">{t("diagnosticsPage.catalog.desktopOnly")}</p>
+          ) : undefined
+        }
+        onSync={() => {
+          void (async () => {
+            setCatalogBusy("sync");
+            try {
+              const r = await catalogSyncNowWithUi(t);
+              setLastCatalogReport(r);
+            } catch (e) {
+              toast.error(String(e));
+            } finally {
+              setCatalogBusy(null);
+            }
+          })();
+        }}
+        onReload={() => {
+          void (async () => {
+            setCatalogBusy("reload");
+            try {
+              await catalogReloadLocalWithUi(t);
+            } catch (e) {
+              toast.error(String(e));
+            } finally {
+              setCatalogBusy(null);
+            }
+          })();
+        }}
+      />
 
       <Card>
         <CardHeader className="flex flex-row flex-wrap items-center justify-between gap-4 space-y-0">

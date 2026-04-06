@@ -23,6 +23,7 @@
 - [Экспорт и установка в игру](#экспорт-и-установка-в-игру)
 - [Загрузка конфига в запущенную CS 1.6](#загрузка-конфига-в-запущенную-cs-16)
 - [Структура проекта](#структура-проекта)
+- [Каталог данных в Rust (goldsr_cfg_core)](#каталог-данных-в-rust-goldsr_cfg_core)
 - [Модульные .cfg](#модульные-cfg)
 - [Сборка v3 (Tauri)](#сборка-v3-tauri)
 - [Тесты и CI](#тесты-и-ci)
@@ -278,6 +279,20 @@ cspres/
 │       └── benchmarks/
 └── output/                 # Примеры сгенерированных .cfg (по желанию)
 ```
+
+### Каталог данных в Rust (goldsr_cfg_core)
+
+Игровые JSON лежат в корне репозитория в **`data/`** (режимы, пресеты, CVAR, алиасы, buyscripts). Crate **`goldsr_cfg_core`** подключает их через `include_str!` в модулях **`src/data/`**:
+
+| Модуль | Источник JSON | Назначение |
+|--------|----------------|------------|
+| `modes.rs` | `data/modes.json` | Список режимов, генерация |
+| `presets.rs` | `data/presets.json` | Про-пресеты |
+| `cvars.rs` | `data/cvars.json` | Описания CVAR для экспорта |
+| `aliases.rs` | `data/aliases.json` | Каталог алиасов, `aliases.cfg` |
+| `buyscripts.rs` | `data/buyscripts.json` | `buyscripts.cfg` |
+
+Публичный API библиотеки не менялся при переносе в `src/data/`; см. [CHANGELOG.md](CHANGELOG.md).
 
 ---
 

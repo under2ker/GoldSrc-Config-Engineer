@@ -39,6 +39,15 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -660,18 +669,22 @@ export function ProfilesPage() {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={clearHistoryOpen} onOpenChange={(o) => !o && setClearHistoryOpen(false)}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Очистить всю историю?</DialogTitle>
-            <DialogDescription>
+      <AlertDialog
+        open={clearHistoryOpen}
+        onOpenChange={(open) => {
+          if (!open && clearHistoryBusy) return;
+          setClearHistoryOpen(open);
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Очистить всю историю?</AlertDialogTitle>
+            <AlertDialogDescription>
               Все снимки конфигураций будут удалены из локальной базы. Профили и файлы на диске не затрагиваются.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter className="gap-2 sm:gap-0">
-            <Button type="button" variant="outline" onClick={() => setClearHistoryOpen(false)}>
-              Отмена
-            </Button>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="gap-2 sm:gap-0">
+            <AlertDialogCancel disabled={clearHistoryBusy}>Отмена</AlertDialogCancel>
             <Button
               type="button"
               variant="destructive"
@@ -680,26 +693,26 @@ export function ProfilesPage() {
             >
               Очистить
             </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
-      <Dialog open={deleteId !== null} onOpenChange={(o) => !o && setDeleteId(null)}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Удалить профиль?</DialogTitle>
-            <DialogDescription>Действие необратимо. Файлы на диске игры не затрагиваются.</DialogDescription>
-          </DialogHeader>
-          <DialogFooter className="gap-2 sm:gap-0">
-            <Button type="button" variant="outline" onClick={() => setDeleteId(null)}>
-              Отмена
-            </Button>
+      <AlertDialog open={deleteId !== null} onOpenChange={(open) => !open && setDeleteId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Удалить профиль?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Действие необратимо. Файлы на диске игры не затрагиваются.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="gap-2 sm:gap-0">
+            <AlertDialogCancel>Отмена</AlertDialogCancel>
             <Button type="button" variant="destructive" onClick={() => void confirmDelete()}>
               Удалить
             </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <Dialog open={renameId !== null} onOpenChange={(o) => !o && setRenameId(null)}>
         <DialogContent>
