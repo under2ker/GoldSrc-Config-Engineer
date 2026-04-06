@@ -1,7 +1,7 @@
 {
   "name": "goldsr-config-engineer",
   "private": true,
-  "version": "3.2.0",
+  "version": "3.2.1",
   "description": "GoldSrc Config Engineer — генератор CFG для CS 1.6 (Tauri + React + Rust)",
   "type": "module",
   "repository": {

@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/under2ker/GoldSrc-Config-Engineer/actions/workflows/ci.yml/badge.svg)](https://github.com/under2ker/GoldSrc-Config-Engineer/actions/workflows/ci.yml)
 
-**Версия в разработке: 3.2.0** · Профессиональный генератор конфигурационных файлов для **Counter-Strike 1.6** (GoldSrc)
+**Текущая версия: 3.2.1** · Профессиональный генератор конфигурационных файлов для **Counter-Strike 1.6** (GoldSrc)
 
 Активная кодовая база — **Tauri 2 + React 18 + TypeScript** (Rust backend). Предыдущая стабильная линейка **v2.4.x (Python + CustomTkinter)** перенесена в **[`archive/v2-python-customtkinter/`](archive/v2-python-customtkinter/README.md)** и помечена как архив.
 
@@ -350,7 +350,7 @@ python -m pytest tests/ -v
 
 ## Дизайн-система
 
-Актуальное описание токенов, типографики, сетки, состояний и a11y: **[docs/DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md)** — интерфейс **v3.2.0** (Tailwind 4, shadcn-стиль, Radix, OKLCH, тема по системе при первом запуске). Список изменений: [CHANGELOG.md](CHANGELOG.md).
+Актуальное описание токенов, типографики, сетки, состояний и a11y: **[docs/DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md)** — интерфейс **v3.2.1** (Tailwind 4, shadcn-стиль, Radix, OKLCH, тема по системе при первом запуске). Список изменений: [CHANGELOG.md](CHANGELOG.md).
 
 Историческая тема v2 (CustomTkinter): в архиве **`archive/v2-python-customtkinter/cfg_generator/theme.py`** — палитра **midnight** и альтернативы. Миграция: [MIGRATION_GUIDE.md](MIGRATION_GUIDE.md). Ориентир по цветам (midnight v2):
 

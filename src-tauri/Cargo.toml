@@ -1,6 +1,6 @@
 [package]
 name = "goldsr-config-engineer"
-version = "3.2.0"
+version = "3.2.1"
 description = "GoldSrc Config Engineer — Tauri shell"
 authors = ["cspres"]
 edition = "2021"
