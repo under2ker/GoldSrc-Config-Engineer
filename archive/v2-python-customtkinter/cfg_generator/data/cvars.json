@@ -1,0 +1,621 @@
+{
+  "video": {
+    "fps_max": {
+      "default": "100",
+      "range": [20, 1000],
+      "type": "int",
+      "description_en": "Maximum FPS limit",
+      "description_ru": "Максимальный лимит FPS",
+      "category": "video"
+    },
+    "gl_vsync": {
+      "default": "0",
+      "values": ["0", "1"],
+      "type": "bool",
+      "description_en": "Vertical sync",
+      "description_ru": "Вертикальная синхронизация",
+      "category": "video"
+    },
+    "gl_ansio": {
+      "default": "1",
+      "values": ["1", "2", "4", "8", "16"],
+      "type": "int",
+      "description_en": "Anisotropic filtering level",
+      "description_ru": "Уровень анизотропной фильтрации",
+      "category": "video"
+    },
+    "r_detailtextures": {
+      "default": "0",
+      "values": ["0", "1"],
+      "type": "bool",
+      "description_en": "Detail textures",
+      "description_ru": "Детализированные текстуры",
+      "category": "video"
+    },
+    "gl_texturemode": {
+      "default": "GL_LINEAR_MIPMAP_LINEAR",
+      "values": ["GL_LINEAR_MIPMAP_NEAREST", "GL_LINEAR_MIPMAP_LINEAR", "GL_NEAREST_MIPMAP_NEAREST", "GL_NEAREST_MIPMAP_LINEAR", "GL_NEAREST", "GL_LINEAR"],
+      "type": "string",
+      "description_en": "Texture filtering mode",
+      "description_ru": "Режим фильтрации текстур",
+      "category": "video"
+    },
+    "gl_max_size": {
+      "default": "256",
+      "values": ["64", "128", "256", "512", "1024"],
+      "type": "int",
+      "description_en": "Maximum texture resolution",
+      "description_ru": "Максимальное разрешение текстур",
+      "category": "video"
+    },
+    "gl_picmip": {
+      "default": "0",
+      "range": [0, 3],
+      "type": "int",
+      "description_en": "Texture quality reduction",
+      "description_ru": "Уровень понижения качества текстур",
+      "category": "video"
+    },
+    "brightness": {
+      "default": "1",
+      "range": [0, 3],
+      "type": "float",
+      "description_en": "Screen brightness",
+      "description_ru": "Яркость экрана",
+      "category": "video"
+    },
+    "gamma": {
+      "default": "2.5",
+      "range": [1.0, 3.0],
+      "type": "float",
+      "description_en": "Gamma correction",
+      "description_ru": "Гамма-коррекция",
+      "category": "video"
+    },
+    "cl_shadows": {
+      "default": "1",
+      "values": ["0", "1"],
+      "type": "bool",
+      "description_en": "Player shadows",
+      "description_ru": "Тени игроков",
+      "category": "video"
+    },
+    "r_dynamic": {
+      "default": "1",
+      "values": ["0", "1"],
+      "type": "bool",
+      "description_en": "Dynamic lighting",
+      "description_ru": "Динамическое освещение",
+      "category": "video"
+    },
+    "r_drawviewmodel": {
+      "default": "1",
+      "values": ["0", "1"],
+      "type": "bool",
+      "description_en": "Draw weapon model",
+      "description_ru": "Показывать модель оружия",
+      "category": "video"
+    },
+    "cl_bob": {
+      "default": "0.01",
+      "range": [0, 0.02],
+      "type": "float",
+      "description_en": "Weapon bobbing amount",
+      "description_ru": "Амплитуда покачивания оружия",
+      "category": "video"
+    },
+    "cl_bobup": {
+      "default": "0.5",
+      "range": [0, 1],
+      "type": "float",
+      "description_en": "Weapon bobbing up ratio",
+      "description_ru": "Фракция покачивания оружия вверх",
+      "category": "video"
+    },
+    "cl_bobcycle": {
+      "default": "0.8",
+      "range": [0.1, 1.0],
+      "type": "float",
+      "description_en": "Weapon bobbing cycle speed",
+      "description_ru": "Скорость цикла покачивания оружия",
+      "category": "video"
+    },
+    "viewmodel_fov": {
+      "default": "90",
+      "range": [60, 120],
+      "type": "int",
+      "description_en": "Weapon model field of view",
+      "description_ru": "Поле зрения модели оружия",
+      "category": "video"
+    },
+    "default_fov": {
+      "default": "90",
+      "range": [70, 110],
+      "type": "int",
+      "description_en": "Default field of view",
+      "description_ru": "Стандартное поле зрения",
+      "category": "video"
+    },
+    "cl_weather": {
+      "default": "1",
+      "values": ["0", "1"],
+      "type": "bool",
+      "description_en": "Weather effects",
+      "description_ru": "Эффекты погоды",
+      "category": "video"
+    },
+    "max_shells": {
+      "default": "9",
+      "range": [0, 36],
+      "type": "int",
+      "description_en": "Maximum shell casings rendered",
+      "description_ru": "Максимальное количество гильз",
+      "category": "video"
+    },
+    "max_smokepuffs": {
+      "default": "10",
+      "range": [0, 32],
+      "type": "int",
+      "description_en": "Maximum smoke puffs rendered",
+      "description_ru": "Максимальное количество дымовых клубов",
+      "category": "video"
+    },
+    "fastsprites": {
+      "default": "0",
+      "values": ["0", "1", "2"],
+      "type": "int",
+      "description_en": "Smoke sprite quality (0=best, 2=fast)",
+      "description_ru": "Качество спрайтов дыма (0=лучшее, 2=быстрое)",
+      "category": "video"
+    },
+    "cl_corpsestay": {
+      "default": "600",
+      "range": [0, 600],
+      "type": "float",
+      "description_en": "Corpse stay time (seconds)",
+      "description_ru": "Время нахождения трупов (секунды)",
+      "category": "video"
+    },
+    "gl_overbright": {
+      "default": "0",
+      "values": ["0", "1"],
+      "type": "bool",
+      "description_en": "Override brightness",
+      "description_ru": "Переопределение яркости",
+      "category": "video"
+    },
+    "gl_cull": {
+      "default": "1",
+      "values": ["0", "1"],
+      "type": "bool",
+      "description_en": "Back-face culling",
+      "description_ru": "Отсечение задних граней",
+      "category": "video"
+    },
+    "gl_keeptjunctions": {
+      "default": "1",
+      "values": ["0", "1"],
+      "type": "bool",
+      "description_en": "Fix T-junction gaps",
+      "description_ru": "Исправление T-junction щелей",
+      "category": "video"
+    },
+    "gl_ztrick": {
+      "default": "1",
+      "values": ["0", "1"],
+      "type": "bool",
+      "description_en": "Z-buffer trick for performance",
+      "description_ru": "Z-buffer трюк для производительности",
+      "category": "video"
+    },
+    "gl_fog": {
+      "default": "1",
+      "values": ["0", "1"],
+      "type": "bool",
+      "description_en": "Fog rendering",
+      "description_ru": "Отрисовка тумана",
+      "category": "video"
+    },
+    "gl_spriteblend": {
+      "default": "1",
+      "values": ["0", "1"],
+      "type": "bool",
+      "description_en": "Sprite blending",
+      "description_ru": "Смешивание спрайтов",
+      "category": "video"
+    },
+    "cl_decals_max": {
+      "default": "300",
+      "range": [0, 4096],
+      "type": "int",
+      "description_en": "Maximum decals (bullet holes, blood)",
+      "description_ru": "Максимум декалей (следы пуль, кровь)",
+      "category": "video"
+    }
+  },
+  "audio": {
+    "volume": {
+      "default": "0.8",
+      "range": [0, 1.0],
+      "type": "float",
+      "description_en": "Master volume",
+      "description_ru": "Основная громкость",
+      "category": "audio"
+    },
+    "MP3Volume": {
+      "default": "0.8",
+      "range": [0, 1.0],
+      "type": "float",
+      "description_en": "MP3/Music volume",
+      "description_ru": "Громкость музыки",
+      "category": "audio"
+    },
+    "suitvolume": {
+      "default": "0.25",
+      "range": [0, 1.0],
+      "type": "float",
+      "description_en": "HEV suit volume",
+      "description_ru": "Громкость костюма HEV",
+      "category": "audio"
+    },
+    "hisound": {
+      "default": "1",
+      "values": ["0", "1"],
+      "type": "bool",
+      "description_en": "High quality sound",
+      "description_ru": "Высокое качество звука",
+      "category": "audio"
+    },
+    "s_eax": {
+      "default": "0",
+      "values": ["0", "1"],
+      "type": "bool",
+      "description_en": "EAX sound effects",
+      "description_ru": "Звуковые эффекты EAX",
+      "category": "audio"
+    },
+    "s_a3d": {
+      "default": "0",
+      "values": ["0", "1"],
+      "type": "bool",
+      "description_en": "A3D sound effects",
+      "description_ru": "Звуковые эффекты A3D",
+      "category": "audio"
+    },
+    "bgmvolume": {
+      "default": "1",
+      "range": [0, 1.0],
+      "type": "float",
+      "description_en": "Background music volume",
+      "description_ru": "Громкость фоновой музыки",
+      "category": "audio"
+    },
+    "_snd_mixahead": {
+      "default": "0.1",
+      "range": [0.05, 0.2],
+      "type": "float",
+      "description_en": "Sound mix ahead buffer",
+      "description_ru": "Буфер предварительного микширования звука",
+      "category": "audio"
+    },
+    "cl_download_ingame": {
+      "default": "1",
+      "values": ["0", "1"],
+      "type": "bool",
+      "description_en": "Download custom sounds in-game",
+      "description_ru": "Загружать пользовательские звуки в игре",
+      "category": "audio"
+    }
+  },
+  "input": {
+    "sensitivity": {
+      "default": "3",
+      "range": [0.1, 20.0],
+      "type": "float",
+      "description_en": "Mouse sensitivity",
+      "description_ru": "Чувствительность мыши",
+      "category": "input"
+    },
+    "zoom_sensitivity_ratio": {
+      "default": "1.0",
+      "range": [0.1, 5.0],
+      "type": "float",
+      "description_en": "Zoom sensitivity ratio",
+      "description_ru": "Чувствительность при прицеливании",
+      "category": "input"
+    },
+    "m_filter": {
+      "default": "0",
+      "values": ["0", "1"],
+      "type": "bool",
+      "description_en": "Mouse filtering (smoothing)",
+      "description_ru": "Фильтрация мыши (сглаживание)",
+      "category": "input"
+    },
+    "m_rawinput": {
+      "default": "1",
+      "values": ["0", "1"],
+      "type": "bool",
+      "description_en": "Raw mouse input",
+      "description_ru": "Прямой ввод мыши (raw input)",
+      "category": "input"
+    },
+    "m_customaccel": {
+      "default": "0",
+      "values": ["0", "1", "2", "3"],
+      "type": "int",
+      "description_en": "Mouse acceleration type",
+      "description_ru": "Тип ускорения мыши",
+      "category": "input"
+    },
+    "m_customaccel_exponent": {
+      "default": "1",
+      "range": [1, 10],
+      "type": "float",
+      "description_en": "Mouse acceleration exponent",
+      "description_ru": "Экспонента ускорения мыши",
+      "category": "input"
+    },
+    "m_mousethread_sleep": {
+      "default": "1",
+      "range": [0, 10],
+      "type": "int",
+      "description_en": "Mouse thread sleep interval",
+      "description_ru": "Интервал сна потока мыши",
+      "category": "input"
+    },
+    "m_pitch": {
+      "default": "0.022",
+      "range": [0.01, 0.05],
+      "type": "float",
+      "description_en": "Mouse pitch (vertical speed)",
+      "description_ru": "Скорость мыши по вертикали",
+      "category": "input"
+    },
+    "m_yaw": {
+      "default": "0.022",
+      "range": [0.01, 0.05],
+      "type": "float",
+      "description_en": "Mouse yaw (horizontal speed)",
+      "description_ru": "Скорость мыши по горизонтали",
+      "category": "input"
+    },
+    "cl_mousegrab": {
+      "default": "1",
+      "values": ["0", "1"],
+      "type": "bool",
+      "description_en": "Grab mouse cursor in window",
+      "description_ru": "Захватывать курсор мыши в окне",
+      "category": "input"
+    }
+  },
+  "network": {
+    "rate": {
+      "default": "25000",
+      "range": [1000, 100000],
+      "type": "int",
+      "description_en": "Network rate (bytes/sec)",
+      "description_ru": "Сетевая скорость (байт/сек)",
+      "category": "network"
+    },
+    "cl_cmdrate": {
+      "default": "100",
+      "range": [10, 300],
+      "type": "int",
+      "description_en": "Command rate (packets/sec to server)",
+      "description_ru": "Частота отправки команд серверу (пакетов/сек)",
+      "category": "network"
+    },
+    "cl_updaterate": {
+      "default": "100",
+      "range": [10, 300],
+      "type": "int",
+      "description_en": "Update rate (packets/sec from server)",
+      "description_ru": "Частота обновлений от сервера (пакетов/сек)",
+      "category": "network"
+    },
+    "ex_interp": {
+      "default": "0.01",
+      "range": [0.01, 0.1],
+      "type": "float",
+      "description_en": "Interpolation amount",
+      "description_ru": "Величина интерполяции",
+      "category": "network"
+    },
+    "cl_lc": {
+      "default": "1",
+      "values": ["0", "1"],
+      "type": "bool",
+      "description_en": "Lag compensation",
+      "description_ru": "Компенсация лагов",
+      "category": "network"
+    },
+    "cl_lw": {
+      "default": "1",
+      "values": ["0", "1"],
+      "type": "bool",
+      "description_en": "Client-side weapon prediction",
+      "description_ru": "Клиентское предсказание оружия",
+      "category": "network"
+    },
+    "cl_resend": {
+      "default": "6",
+      "range": [1.5, 20],
+      "type": "float",
+      "description_en": "Connection retry delay (seconds)",
+      "description_ru": "Задержка повторного подключения (секунды)",
+      "category": "network"
+    },
+    "cl_timeout": {
+      "default": "300",
+      "range": [30, 900],
+      "type": "int",
+      "description_en": "Server connection timeout",
+      "description_ru": "Тайм-аут подключения к серверу",
+      "category": "network"
+    },
+    "cl_allowdownload": {
+      "default": "1",
+      "values": ["0", "1"],
+      "type": "bool",
+      "description_en": "Allow downloading custom content",
+      "description_ru": "Разрешить загрузку пользовательского контента",
+      "category": "network"
+    },
+    "cl_allowupload": {
+      "default": "1",
+      "values": ["0", "1"],
+      "type": "bool",
+      "description_en": "Allow uploading custom content",
+      "description_ru": "Разрешить отправку пользовательского контента",
+      "category": "network"
+    }
+  },
+  "gameplay": {
+    "cl_righthand": {
+      "default": "1",
+      "values": ["0", "1"],
+      "type": "bool",
+      "description_en": "Right-handed weapon models",
+      "description_ru": "Оружие в правой руке",
+      "category": "gameplay"
+    },
+    "cl_dynamiccrosshair": {
+      "default": "1",
+      "values": ["0", "1"],
+      "type": "bool",
+      "description_en": "Dynamic crosshair",
+      "description_ru": "Динамический прицел",
+      "category": "gameplay"
+    },
+    "cl_crosshair_color": {
+      "default": "\"50 250 50\"",
+      "type": "string",
+      "description_en": "Crosshair color (R G B)",
+      "description_ru": "Цвет прицела (R G B)",
+      "category": "gameplay"
+    },
+    "cl_crosshair_size": {
+      "default": "auto",
+      "values": ["auto", "small", "medium", "large"],
+      "type": "string",
+      "description_en": "Crosshair size",
+      "description_ru": "Размер прицела",
+      "category": "gameplay"
+    },
+    "cl_crosshair_translucent": {
+      "default": "1",
+      "values": ["0", "1"],
+      "type": "bool",
+      "description_en": "Translucent crosshair",
+      "description_ru": "Полупрозрачный прицел",
+      "category": "gameplay"
+    },
+    "hud_fastswitch": {
+      "default": "0",
+      "values": ["0", "1"],
+      "type": "bool",
+      "description_en": "Fast weapon switch",
+      "description_ru": "Быстрая смена оружия",
+      "category": "gameplay"
+    },
+    "hud_centerid": {
+      "default": "0",
+      "values": ["0", "1"],
+      "type": "bool",
+      "description_en": "Centered player ID display",
+      "description_ru": "Центрированный ID игрока",
+      "category": "gameplay"
+    },
+    "hud_draw": {
+      "default": "1",
+      "values": ["0", "1"],
+      "type": "bool",
+      "description_en": "Draw HUD",
+      "description_ru": "Показывать HUD",
+      "category": "gameplay"
+    },
+    "net_graph": {
+      "default": "0",
+      "values": ["0", "1", "2", "3"],
+      "type": "int",
+      "description_en": "Network statistics graph",
+      "description_ru": "График сетевой статистики",
+      "category": "gameplay"
+    },
+    "net_graphpos": {
+      "default": "1",
+      "values": ["1", "2", "3"],
+      "type": "int",
+      "description_en": "Network graph position",
+      "description_ru": "Позиция графика сетевой статистики",
+      "category": "gameplay"
+    },
+    "cl_showfps": {
+      "default": "0",
+      "values": ["0", "1"],
+      "type": "bool",
+      "description_en": "Show FPS counter",
+      "description_ru": "Показывать счётчик FPS",
+      "category": "gameplay"
+    },
+    "hud_takesshots": {
+      "default": "0",
+      "values": ["0", "1"],
+      "type": "bool",
+      "description_en": "Auto-screenshot on round end",
+      "description_ru": "Авто-скриншот в конце раунда",
+      "category": "gameplay"
+    },
+    "_cl_autowepswitch": {
+      "default": "1",
+      "values": ["0", "1"],
+      "type": "bool",
+      "description_en": "Auto weapon switch on pickup",
+      "description_ru": "Авто-смена оружия при подборе",
+      "category": "gameplay"
+    },
+    "cl_minmodels": {
+      "default": "0",
+      "values": ["0", "1"],
+      "type": "bool",
+      "description_en": "Use minimal player models",
+      "description_ru": "Использовать минимальные модели игроков",
+      "category": "gameplay"
+    },
+    "cl_himodels": {
+      "default": "0",
+      "values": ["0", "1"],
+      "type": "bool",
+      "description_en": "Use high quality models",
+      "description_ru": "Использовать модели высокого качества",
+      "category": "gameplay"
+    }
+  },
+  "demo": {
+    "cl_autodemo": {
+      "default": "0",
+      "values": ["0", "1"],
+      "type": "bool",
+      "description_en": "Auto-record demos",
+      "description_ru": "Авто-запись демо",
+      "category": "demo"
+    },
+    "startmovie_fps": {
+      "default": "30",
+      "range": [15, 120],
+      "type": "int",
+      "description_en": "Movie recording FPS",
+      "description_ru": "FPS записи видео",
+      "category": "demo"
+    },
+    "cl_showevents": {
+      "default": "0",
+      "values": ["0", "1"],
+      "type": "bool",
+      "description_en": "Show game events in console",
+      "description_ru": "Показывать события в консоле",
+      "category": "demo"
+    }
+  }
+}

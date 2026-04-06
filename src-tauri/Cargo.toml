@@ -1,0 +1,26 @@
+[package]
+name = "goldsr-config-engineer"
+version = "3.2.0"
+description = "GoldSrc Config Engineer — Tauri shell"
+authors = ["cspres"]
+edition = "2021"
+
+[lib]
+name = "goldsr_config_engineer_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+goldsr_cfg_core = { path = "../goldsr_cfg_core" }
+tauri = { version = "2", features = [] }
+tauri-plugin-opener = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tauri-plugin-dialog = "2"
+tauri-plugin-fs = "2"
+rusqlite = { version = "0.32", features = ["bundled"] }
+uuid = { version = "1", features = ["v4"] }
+chrono = { version = "0.4", default-features = false, features = ["clock", "std"] }
+reqwest = { version = "0.12", default-features = false, features = ["blocking", "rustls-tls"] }

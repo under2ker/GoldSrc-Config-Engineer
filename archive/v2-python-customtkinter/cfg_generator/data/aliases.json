@@ -1,0 +1,600 @@
+{
+  "movement": {
+    "_section_comment": "Movement aliases",
+    "aliases": [
+      {
+        "name": "+duckjump",
+        "plus": "+jump; +duck",
+        "minus": "-jump; -duck",
+        "description": "Прыжок с приседом",
+        "safety": "SAFE",
+        "required": true
+      },
+      {
+        "name": "+jumpthrow",
+        "plus": "+jump; -attack",
+        "minus": "-jump",
+        "description": "Бросок гранаты с прыжка",
+        "safety": "SAFE",
+        "required": true
+      },
+      {
+        "name": "+quickswitch",
+        "plus": "lastinv; wait; lastinv",
+        "minus": "",
+        "description": "Быстрая смена оружия туда-обратно",
+        "safety": "WAIT",
+        "required": true
+      },
+      {
+        "name": "+ladderup",
+        "plus": "+forward; +moveright",
+        "minus": "-forward; -moveright",
+        "description": "Быстрый подъём по лестнице",
+        "safety": "SAFE",
+        "required": true
+      },
+      {
+        "name": "+ladderdown",
+        "plus": "+back; +moveleft",
+        "minus": "-back; -moveleft",
+        "description": "Быстрый спуск по лестнице",
+        "safety": "SAFE",
+        "required": true
+      },
+      {
+        "name": "+jumpduck",
+        "plus": "+duck; +jump",
+        "minus": "-duck; -jump",
+        "description": "Присед перед прыжком (KZ / block jump)",
+        "safety": "SAFE",
+        "required": false
+      },
+      {
+        "name": "+bhop_scroll",
+        "plus": "+jump",
+        "minus": "-jump",
+        "description": "Бхоп через колёсико (легитимный +jump)",
+        "safety": "SAFE",
+        "required": false
+      },
+      {
+        "name": "+highjump",
+        "plus": "+duck; wait; -duck; wait; wait; +jump; +duck",
+        "minus": "-jump; -duck",
+        "description": "HighJump (block): duck -> release -> pause -> jump+duck, max height",
+        "safety": "WAIT",
+        "required": false
+      },
+      {
+        "name": "+countjump",
+        "plus": "+duck; wait; -duck; wait; +jump; +duck",
+        "minus": "-jump; -duck",
+        "description": "Countjump (CJ): duck, unduck, jump, duck (classic KZ)",
+        "safety": "WAIT",
+        "required": false
+      },
+      {
+        "name": "+longjump",
+        "plus": "+jump; +duck",
+        "minus": "-jump; -duck",
+        "description": "Longjump (LJ): синхронный jump+duck в длину (W + стрейф)",
+        "safety": "SAFE",
+        "required": false
+      },
+      {
+        "name": "kz_blockjump_chain",
+        "type": "kz_chain",
+        "chain_id": "kz_blockjump",
+        "steps": [
+          "+duck",
+          "-duck",
+          "+jump",
+          "+duck",
+          "-jump; -duck"
+        ],
+        "description": "HJ/CJ without wait: 5x kz_blockjump_go (duck, unduck, jump, duck, release)",
+        "safety": "SAFE",
+        "required": false
+      }
+    ]
+  },
+  "weapon": {
+    "_section_comment": "Weapon quick-access aliases",
+    "aliases": [
+      {
+        "name": "quick_knife",
+        "command": "slot3; wait; wait; slot1",
+        "description": "Быстрый нож (достать и вернуть)",
+        "safety": "WAIT",
+        "required": true
+      },
+      {
+        "name": "quick_pistol",
+        "command": "slot2",
+        "description": "Быстрый пистолет",
+        "safety": "SAFE",
+        "required": true
+      },
+      {
+        "name": "quick_primary",
+        "command": "slot1",
+        "description": "Быстрое основное оружие",
+        "safety": "SAFE",
+        "required": true
+      },
+      {
+        "name": "quick_he",
+        "command": "weapon_hegrenade",
+        "description": "Быстрая HE-граната",
+        "safety": "SAFE",
+        "required": true
+      },
+      {
+        "name": "quick_flash",
+        "command": "weapon_flashbang",
+        "description": "Быстрая флешбэнг",
+        "safety": "SAFE",
+        "required": true
+      },
+      {
+        "name": "quick_smoke",
+        "command": "weapon_smokegrenade",
+        "description": "Быстрая дымовая",
+        "safety": "SAFE",
+        "required": true
+      },
+      {
+        "name": "drop_bomb",
+        "command": "use weapon_c4; drop",
+        "description": "Сбросить бомбу",
+        "safety": "SAFE",
+        "required": true
+      }
+    ]
+  },
+  "communication": {
+    "_section_comment": "Communication callout aliases",
+    "aliases": [
+      {
+        "name": "call_a",
+        "command": "say_team \"Going A\"",
+        "description": "Callout: Going A",
+        "safety": "SAFE",
+        "required": true
+      },
+      {
+        "name": "call_b",
+        "command": "say_team \"Going B\"",
+        "description": "Callout: Going B",
+        "safety": "SAFE",
+        "required": true
+      },
+      {
+        "name": "call_mid",
+        "command": "say_team \"Mid\"",
+        "description": "Callout: Mid",
+        "safety": "SAFE",
+        "required": true
+      },
+      {
+        "name": "call_rush",
+        "command": "say_team \"RUSH\"",
+        "description": "Callout: RUSH",
+        "safety": "SAFE",
+        "required": true
+      },
+      {
+        "name": "call_eco",
+        "command": "say_team \"ECO round\"",
+        "description": "Callout: ECO раунд",
+        "safety": "SAFE",
+        "required": true
+      },
+      {
+        "name": "call_save",
+        "command": "say_team \"Save weapons\"",
+        "description": "Callout: Сохранить оружие",
+        "safety": "SAFE",
+        "required": true
+      },
+      {
+        "name": "call_rotate",
+        "command": "say_team \"Rotate!\"",
+        "description": "Callout: Ротация",
+        "safety": "SAFE",
+        "required": true
+      },
+      {
+        "name": "call_gg",
+        "command": "say \"gg\"",
+        "description": "GG",
+        "safety": "SAFE",
+        "required": false
+      },
+      {
+        "name": "call_gl",
+        "command": "say \"gl hf\"",
+        "description": "GL HF",
+        "safety": "SAFE",
+        "required": false
+      },
+      {
+        "name": "call_ns",
+        "command": "say \"ns\"",
+        "description": "Nice shot",
+        "safety": "SAFE",
+        "required": false
+      },
+      {
+        "name": "spam_gg",
+        "command": "say \"gg wp\"",
+        "description": "Быстрая фраза: gg wp",
+        "safety": "SAFE",
+        "required": false
+      },
+      {
+        "name": "spam_ns",
+        "command": "say \"nice shot!\"",
+        "description": "Быстрая фраза: nice shot",
+        "safety": "SAFE",
+        "required": false
+      },
+      {
+        "name": "spam_nt",
+        "command": "say \"nice try\"",
+        "description": "Быстрая фраза: nice try",
+        "safety": "SAFE",
+        "required": false
+      },
+      {
+        "name": "spam_glhf",
+        "command": "say \"gl hf\"",
+        "description": "Быстрая фраза: gl hf",
+        "safety": "SAFE",
+        "required": false
+      },
+      {
+        "name": "spam_gh",
+        "command": "say \"good half\"",
+        "description": "Быстрая фраза: good half",
+        "safety": "SAFE",
+        "required": false
+      }
+    ]
+  },
+  "utility": {
+    "_section_comment": "Utility toggle/cycle aliases",
+    "aliases": [
+      {
+        "name": "toggle_netgraph",
+        "type": "cycle",
+        "states": [
+          {"name": "ng_0", "command": "net_graph 0; echo NetGraph: OFF", "next": "ng_1"},
+          {"name": "ng_1", "command": "net_graph 1; echo NetGraph: 1", "next": "ng_2"},
+          {"name": "ng_2", "command": "net_graph 2; echo NetGraph: 2", "next": "ng_3"},
+          {"name": "ng_3", "command": "net_graph 3; echo NetGraph: 3", "next": "ng_0"}
+        ],
+        "description": "Переключение netgraph 0/1/2/3",
+        "safety": "SAFE",
+        "required": true
+      },
+      {
+        "name": "toggle_fps",
+        "type": "cycle",
+        "states": [
+          {"name": "fps_0", "command": "cl_showfps 0; echo FPS: OFF", "next": "fps_1"},
+          {"name": "fps_1", "command": "cl_showfps 1; echo FPS: ON", "next": "fps_2"},
+          {"name": "fps_2", "command": "cl_showfps 2; echo FPS: Extended", "next": "fps_0"}
+        ],
+        "description": "Переключение FPS-счётчика",
+        "safety": "SAFE",
+        "required": true
+      },
+      {
+        "name": "toggle_xhair",
+        "type": "cycle",
+        "states": [
+          {"name": "xhair_1", "command": "cl_crosshair_size small; cl_crosshair_color \"50 250 50\"; echo Crosshair: Small Green", "next": "xhair_2"},
+          {"name": "xhair_2", "command": "cl_crosshair_size medium; cl_crosshair_color \"255 255 0\"; echo Crosshair: Medium Yellow", "next": "xhair_3"},
+          {"name": "xhair_3", "command": "cl_crosshair_size large; cl_crosshair_color \"250 50 50\"; echo Crosshair: Large Red", "next": "xhair_4"},
+          {"name": "xhair_4", "command": "cl_crosshair_size auto; cl_crosshair_color \"50 50 250\"; echo Crosshair: Auto Blue", "next": "xhair_1"}
+        ],
+        "description": "Цикл кроссхейров",
+        "safety": "SAFE",
+        "required": true
+      },
+      {
+        "name": "toggle_hand",
+        "type": "toggle",
+        "on": {"command": "cl_righthand 1; echo Hand: RIGHT"},
+        "off": {"command": "cl_righthand 0; echo Hand: LEFT"},
+        "description": "Смена руки",
+        "safety": "SAFE",
+        "required": true
+      },
+      {
+        "name": "toggle_radar",
+        "type": "toggle",
+        "on": {"command": "cl_radartype 0; echo Radar: Normal"},
+        "off": {"command": "cl_radartype 1; echo Radar: Solid"},
+        "description": "Тип радара",
+        "safety": "SAFE",
+        "required": true
+      },
+      {
+        "name": "toggle_viewmodel",
+        "type": "toggle",
+        "on": {"command": "r_drawviewmodel 1; echo Viewmodel: ON"},
+        "off": {"command": "r_drawviewmodel 0; echo Viewmodel: OFF"},
+        "description": "Показать/скрыть оружие",
+        "safety": "SAFE",
+        "required": true
+      },
+      {
+        "name": "vol_toggle",
+        "type": "toggle",
+        "on": {"command": "volume 0.5; echo Volume: ON"},
+        "off": {"command": "volume 0; echo Volume: OFF"},
+        "description": "Вкл/выкл звук",
+        "safety": "SAFE",
+        "required": false
+      },
+      {
+        "name": "demo_rec",
+        "type": "simple",
+        "command": "record auto_demo; echo Demo recording started",
+        "description": "Запись демо",
+        "safety": "SAFE",
+        "required": true
+      },
+      {
+        "name": "demo_stp",
+        "type": "simple",
+        "command": "stop; echo Demo recording stopped",
+        "description": "Остановка записи демо",
+        "safety": "SAFE",
+        "required": true
+      },
+      {
+        "name": "take_screenshot",
+        "type": "simple",
+        "command": "screenshot",
+        "description": "Скриншот",
+        "safety": "SAFE",
+        "required": true
+      },
+      {
+        "name": "turn_180",
+        "type": "simple",
+        "command": "cl_yawspeed 9999; +left; wait; wait; -left; cl_yawspeed 210",
+        "description": "Быстрый разворот ~180° (требует wait на сервере)",
+        "safety": "WAIT",
+        "required": false
+      },
+      {
+        "name": "spec_next",
+        "type": "simple",
+        "command": "spec_mode",
+        "description": "Следующий режим наблюдателя",
+        "safety": "SAFE",
+        "required": false
+      },
+      {
+        "name": "mode_classic",
+        "type": "simple",
+        "command": "exec config/modes/classic.cfg; echo Mode: Classic",
+        "description": "Загрузить режим Classic",
+        "safety": "SAFE",
+        "required": false
+      },
+      {
+        "name": "mode_kz",
+        "type": "simple",
+        "command": "exec config/modes/kz.cfg; echo Mode: KZ",
+        "description": "Загрузить режим KZ",
+        "safety": "SAFE",
+        "required": false
+      },
+      {
+        "name": "mode_surf",
+        "type": "simple",
+        "command": "exec config/modes/surf.cfg; echo Mode: Surf",
+        "description": "Загрузить режим Surf",
+        "safety": "SAFE",
+        "required": false
+      },
+      {
+        "name": "mode_dm",
+        "type": "simple",
+        "command": "exec config/modes/dm.cfg; echo Mode: Deathmatch",
+        "description": "Загрузить режим Deathmatch",
+        "safety": "SAFE",
+        "required": false
+      },
+      {
+        "name": "sens_toggle",
+        "type": "cycle",
+        "states": [
+          {"name": "sens_normal", "command": "sensitivity 2.5; echo Sensitivity: Normal", "next": "sens_awp"},
+          {"name": "sens_awp", "command": "sensitivity 1.5; echo Sensitivity: AWP", "next": "sens_normal"}
+        ],
+        "description": "Переключение чувствительности Normal / AWP (цепочка)",
+        "safety": "SAFE",
+        "required": false
+      }
+    ]
+  },
+  "practice": {
+    "_section_comment": "Practice mode aliases (sv_cheats 1)",
+    "aliases": [
+      {
+        "name": "prac_on",
+        "command": "sv_cheats 1; sv_airaccelerate 100; sv_maxspeed 320; mp_autoteambalance 0; mp_freezetime 0; mp_roundtime 999; mp_buytime 999; mp_startmoney 16000; mp_limitteams 0; sv_restart 1; echo Practice mode ON",
+        "description": "Включить режим практики",
+        "safety": "PRACTICE",
+        "required": false
+      },
+      {
+        "name": "prac_off",
+        "command": "sv_cheats 0; echo Practice mode OFF",
+        "description": "Выключить режим практики",
+        "safety": "PRACTICE",
+        "required": false
+      },
+      {
+        "name": "god_toggle",
+        "command": "god",
+        "description": "Бессмертие (toggle)",
+        "safety": "PRACTICE",
+        "required": false
+      },
+      {
+        "name": "noclip_toggle",
+        "command": "noclip",
+        "description": "Ноклип (toggle)",
+        "safety": "PRACTICE",
+        "required": false
+      },
+      {
+        "name": "give_all",
+        "command": "impulse 101",
+        "description": "Выдать все оружия",
+        "safety": "PRACTICE",
+        "required": false
+      },
+      {
+        "name": "restart_round",
+        "command": "sv_restart 1",
+        "description": "Рестарт раунда",
+        "safety": "PRACTICE",
+        "required": false
+      },
+      {
+        "name": "bot_freeze",
+        "command": "bot_stop 1",
+        "description": "Заморозить ботов",
+        "safety": "PRACTICE",
+        "required": false
+      },
+      {
+        "name": "bot_unfreeze",
+        "command": "bot_stop 0",
+        "description": "Разморозить ботов",
+        "safety": "PRACTICE",
+        "required": false
+      },
+      {
+        "name": "prac_bot_add_t",
+        "command": "bot_add_t",
+        "description": "Добавить бота за T",
+        "safety": "PRACTICE",
+        "required": false
+      },
+      {
+        "name": "prac_bot_add_ct",
+        "command": "bot_add_ct",
+        "description": "Добавить бота за CT",
+        "safety": "PRACTICE",
+        "required": false
+      },
+      {
+        "name": "prac_bot_kick_all",
+        "command": "bot_kick",
+        "description": "Кикнуть всех ботов",
+        "safety": "PRACTICE",
+        "required": false
+      }
+    ]
+  },
+  "kz_specific": {
+    "_section_comment": "KZ/Climb specific aliases",
+    "aliases": [
+      {
+        "name": "+lt",
+        "plus": "+left; +moveleft",
+        "minus": "-left; -moveleft",
+        "description": "Стрейф влево (KZ лестница/поворот)",
+        "safety": "SAFE",
+        "required": false
+      },
+      {
+        "name": "+rt",
+        "plus": "+right; +moveright",
+        "minus": "-right; -moveright",
+        "description": "Стрейф вправо (KZ лестница/поворот)",
+        "safety": "SAFE",
+        "required": false
+      },
+      {
+        "name": "checkpoint",
+        "type": "simple",
+        "command": "say /cp",
+        "description": "KZ: Чекпоинт",
+        "safety": "SERVERSIDE",
+        "required": false
+      },
+      {
+        "name": "teleport",
+        "type": "simple",
+        "command": "say /tp",
+        "description": "KZ: Телепорт к чекпоинту",
+        "safety": "SERVERSIDE",
+        "required": false
+      },
+      {
+        "name": "gostart",
+        "type": "simple",
+        "command": "say /start",
+        "description": "KZ: Возврат на старт",
+        "safety": "SERVERSIDE",
+        "required": false
+      },
+      {
+        "name": "gochecks",
+        "type": "simple",
+        "command": "say /gc",
+        "description": "KZ: К чекпоинту",
+        "safety": "SERVERSIDE",
+        "required": false
+      },
+      {
+        "name": "stuck",
+        "type": "simple",
+        "command": "say /stuck",
+        "description": "KZ: Unstuck",
+        "safety": "SERVERSIDE",
+        "required": false
+      }
+    ]
+  },
+  "surf_specific": {
+    "_section_comment": "Surf specific aliases",
+    "aliases": [
+      {
+        "name": "surf_restart",
+        "type": "simple",
+        "command": "say /r",
+        "description": "Surf: Рестарт",
+        "safety": "SERVERSIDE",
+        "required": false
+      },
+      {
+        "name": "surf_checkpoint",
+        "type": "simple",
+        "command": "say /cp",
+        "description": "Surf: Чекпоинт",
+        "safety": "SERVERSIDE",
+        "required": false
+      },
+      {
+        "name": "surf_teleport",
+        "type": "simple",
+        "command": "say /tp",
+        "description": "Surf: Телепорт",
+        "safety": "SERVERSIDE",
+        "required": false
+      }
+    ]
+  }
+}

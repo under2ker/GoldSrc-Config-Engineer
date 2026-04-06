@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.venv/
+venv/
+*.egg-info/
+dist-packages/
+
+# Node / Tauri frontend
+node_modules/
+dist/
+dist-ssr/
+*.local
+
+# Rust / Tauri (workspace `cargo` кладёт артефакты в корневой target/)
+target/
+src-tauri/target/
+
+# Локальные примеры сборки .cfg (не коммитить)
+output/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Editor
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

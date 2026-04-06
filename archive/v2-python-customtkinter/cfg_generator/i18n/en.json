@@ -1,0 +1,118 @@
+{
+  "app": {
+    "title": "CS 1.6 Deep CFG Generator",
+    "subtitle": "AI-powered professional config generator",
+    "version": "v1.0.0",
+    "by": "AI CFG Generator"
+  },
+  "menu": {
+    "main_title": "Main Menu",
+    "create_new": "Create new config",
+    "load_preset": "Load pro-player preset",
+    "game_mode": "Select game mode",
+    "hardware_opt": "Hardware optimization",
+    "export_cfg": "Export .cfg",
+    "pro_players": "Pro-players database",
+    "import_cfg": "Import .cfg file",
+    "settings": "Settings",
+    "exit": "Exit",
+    "select_option": "Select option",
+    "back": "Back",
+    "invalid_choice": "Invalid choice. Try again.",
+    "press_enter": "Press Enter to continue..."
+  },
+  "modes": {
+    "title": "Select game mode",
+    "classic": "Classic (Competitive)",
+    "kz": "KreedZ (KZ)",
+    "hns": "Hide and Seek (HNS)",
+    "surf": "Surf",
+    "deathmatch": "DeathMatch (DM)",
+    "war3": "WarCraft 3 Mod",
+    "selected": "Selected mode: {mode}"
+  },
+  "preset": {
+    "title": "Pro-player presets",
+    "select": "Select preset",
+    "team": "Team",
+    "country": "Country",
+    "role": "Role",
+    "applied": "Preset \"{name}\" applied!",
+    "compare": "Compare with current config?"
+  },
+  "hardware": {
+    "title": "Hardware optimization",
+    "select_gpu": "Select GPU vendor",
+    "nvidia": "NVIDIA",
+    "amd": "AMD / ATI",
+    "intel": "Intel HD/UHD Graphics",
+    "select_profile": "Select performance profile",
+    "ultra_low": "Ultra Low (maximum FPS)",
+    "low": "Low (good FPS)",
+    "medium": "Medium (balanced)",
+    "high": "High (quality visuals)",
+    "applied": "Optimization applied!",
+    "tips_title": "Configuration tips",
+    "launch_options": "Launch options"
+  },
+  "generator": {
+    "title": "Config generation",
+    "quick_setup": "Quick setup",
+    "advanced": "Advanced setup",
+    "category_video": "Video",
+    "category_audio": "Audio",
+    "category_input": "Mouse / Input",
+    "category_network": "Network",
+    "category_gameplay": "Gameplay",
+    "enter_value": "Enter value for {cvar}",
+    "current_value": "Current: {value}",
+    "range_hint": "Range: {min} — {max}",
+    "values_hint": "Allowed values: {values}",
+    "invalid_value": "Invalid value!",
+    "config_ready": "Config ready!"
+  },
+  "export": {
+    "title": "Export config",
+    "filename": "Filename",
+    "description": "Description",
+    "success": "Config saved: {path}",
+    "error": "Error saving: {error}",
+    "no_config": "No config to export! Create or load a config first."
+  },
+  "import": {
+    "title": "Import config",
+    "from_file": "From file",
+    "from_url": "From URL",
+    "enter_path": "Enter path to .cfg file",
+    "enter_url": "Enter URL to .cfg file",
+    "success": "Config imported: {count} commands loaded",
+    "error": "Import error: {error}",
+    "file_not_found": "File not found: {path}"
+  },
+  "validator": {
+    "valid": "Command is valid",
+    "invalid": "Unknown command: {cmd}",
+    "dangerous": "WARNING: Dangerous command detected: {cmd}",
+    "out_of_range": "Value out of range for {cmd}: {value}",
+    "report_title": "Validation report",
+    "passed": "Commands checked: {count}",
+    "warnings": "Warnings: {count}",
+    "errors": "Errors: {count}"
+  },
+  "compare": {
+    "title": "Config comparison",
+    "your_config": "Your config",
+    "pro_config": "Preset: {name}",
+    "parameter": "Parameter",
+    "difference": "Differences highlighted"
+  },
+  "common": {
+    "yes": "Yes",
+    "no": "No",
+    "confirm": "Confirm?",
+    "cancel": "Cancel",
+    "done": "Done!",
+    "error": "Error",
+    "warning": "Warning"
+  }
+}

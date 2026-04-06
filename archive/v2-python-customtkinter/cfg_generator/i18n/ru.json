@@ -1,0 +1,118 @@
+{
+  "app": {
+    "title": "CS 1.6 Deep CFG Generator",
+    "subtitle": "AI-генератор профессиональных конфигов",
+    "version": "v1.0.0",
+    "by": "AI CFG Generator"
+  },
+  "menu": {
+    "main_title": "Главное меню",
+    "create_new": "Создать новый конфиг",
+    "load_preset": "Загрузить пресет про-игрока",
+    "game_mode": "Выбрать режим игры",
+    "hardware_opt": "Оптимизация под железо",
+    "export_cfg": "Экспорт .cfg",
+    "pro_players": "База про-игроков",
+    "import_cfg": "Импорт .cfg файла",
+    "settings": "Настройки",
+    "exit": "Выход",
+    "select_option": "Выберите опцию",
+    "back": "Назад",
+    "invalid_choice": "Неверный выбор. Попробуйте ещё раз.",
+    "press_enter": "Нажмите Enter для продолжения..."
+  },
+  "modes": {
+    "title": "Выберите режим игры",
+    "classic": "Классический (Соревновательный)",
+    "kz": "KreedZ (KZ)",
+    "hns": "Прятки (HNS)",
+    "surf": "Сёрф",
+    "deathmatch": "ДезМатч (DM)",
+    "war3": "WarCraft 3 Мод",
+    "selected": "Выбран режим: {mode}"
+  },
+  "preset": {
+    "title": "Пресеты про-игроков",
+    "select": "Выберите пресет",
+    "team": "Команда",
+    "country": "Страна",
+    "role": "Роль",
+    "applied": "Пресет «{name}» применён!",
+    "compare": "Сравнить с текущим конфигом?"
+  },
+  "hardware": {
+    "title": "Оптимизация под железо",
+    "select_gpu": "Выберите производителя видеокарты",
+    "nvidia": "NVIDIA",
+    "amd": "AMD / ATI",
+    "intel": "Intel HD/UHD Graphics",
+    "select_profile": "Выберите профиль производительности",
+    "ultra_low": "Ультра-низкие (максимум FPS)",
+    "low": "Низкие (хороший FPS)",
+    "medium": "Средние (сбалансированные)",
+    "high": "Высокие (качественный визуал)",
+    "applied": "Оптимизация применена!",
+    "tips_title": "Советы по настройке",
+    "launch_options": "Параметры запуска"
+  },
+  "generator": {
+    "title": "Генерация конфига",
+    "quick_setup": "Быстрая настройка",
+    "advanced": "Расширенная настройка",
+    "category_video": "Графика",
+    "category_audio": "Звук",
+    "category_input": "Мышь / Управление",
+    "category_network": "Сеть",
+    "category_gameplay": "Геймплей",
+    "enter_value": "Введите значение для {cvar}",
+    "current_value": "Текущее: {value}",
+    "range_hint": "Диапазон: {min} — {max}",
+    "values_hint": "Допустимые значения: {values}",
+    "invalid_value": "Недопустимое значение!",
+    "config_ready": "Конфиг готов!"
+  },
+  "export": {
+    "title": "Экспорт конфига",
+    "filename": "Имя файла",
+    "description": "Описание",
+    "success": "Конфиг сохранён: {path}",
+    "error": "Ошибка при сохранении: {error}",
+    "no_config": "Нет конфига для экспорта! Сначала создайте или загрузите конфиг."
+  },
+  "import": {
+    "title": "Импорт конфига",
+    "from_file": "Из файла",
+    "from_url": "Из URL",
+    "enter_path": "Введите путь к .cfg файлу",
+    "enter_url": "Введите URL .cfg файла",
+    "success": "Конфиг импортирован: {count} команд загружено",
+    "error": "Ошибка при импорте: {error}",
+    "file_not_found": "Файл не найден: {path}"
+  },
+  "validator": {
+    "valid": "Команда валидна",
+    "invalid": "Неизвестная команда: {cmd}",
+    "dangerous": "ВНИМАНИЕ: Опасная команда обнаружена: {cmd}",
+    "out_of_range": "Значение вне диапазона для {cmd}: {value}",
+    "report_title": "Отчёт валидации",
+    "passed": "Проверено команд: {count}",
+    "warnings": "Предупреждений: {count}",
+    "errors": "Ошибок: {count}"
+  },
+  "compare": {
+    "title": "Сравнение конфигов",
+    "your_config": "Ваш конфиг",
+    "pro_config": "Пресет: {name}",
+    "parameter": "Параметр",
+    "difference": "Отличия выделены"
+  },
+  "common": {
+    "yes": "Да",
+    "no": "Нет",
+    "confirm": "Подтвердить?",
+    "cancel": "Отмена",
+    "done": "Готово!",
+    "error": "Ошибка",
+    "warning": "Предупреждение"
+  }
+}

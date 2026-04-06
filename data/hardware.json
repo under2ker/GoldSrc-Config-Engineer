@@ -1,0 +1,197 @@
+{
+  "gpu_vendor": {
+    "nvidia": {
+      "name_en": "NVIDIA",
+      "name_ru": "NVIDIA",
+      "optimizations": {
+        "gl_vsync": "0",
+        "gl_ansio": "4",
+        "gl_texturemode": "GL_LINEAR_MIPMAP_NEAREST",
+        "gl_max_size": "256",
+        "gl_picmip": "0",
+        "r_detailtextures": "0",
+        "fps_max": "300"
+      },
+      "tips_en": [
+        "Set 'Maximum pre-rendered frames' to 1 in NVIDIA Control Panel",
+        "Set 'Power management mode' to 'Prefer maximum performance'",
+        "Disable 'Threaded Optimization' for hl.exe",
+        "Set 'Texture filtering - Quality' to 'High performance'",
+        "Use '-noforcemparms -noforcemaccel' launch options"
+      ],
+      "tips_ru": [
+        "Установите 'Макс. число предварительно подготовленных кадров' = 1 в панели NVIDIA",
+        "Установите 'Режим управления электропитанием' = 'Предпочтительна макс. производительность'",
+        "Отключите 'Потоковая оптимизация' для hl.exe",
+        "Установите 'Фильтрация текстур - Качество' = 'Высокая производительность'",
+        "Используйте параметры запуска '-noforcemparms -noforcemaccel'"
+      ]
+    },
+    "amd": {
+      "name_en": "AMD / ATI",
+      "name_ru": "AMD / ATI",
+      "optimizations": {
+        "gl_vsync": "0",
+        "gl_ansio": "4",
+        "gl_texturemode": "GL_LINEAR_MIPMAP_NEAREST",
+        "gl_max_size": "256",
+        "gl_picmip": "0",
+        "r_detailtextures": "0",
+        "fps_max": "300"
+      },
+      "tips_en": [
+        "Disable 'Wait for Vertical Refresh' in AMD Radeon Settings",
+        "Set 'Texture Filtering Quality' to 'Performance'",
+        "Disable 'Surface Format Optimization'",
+        "Enable 'OpenGL Triple Buffering'",
+        "Use '-noforcemparms -noforcemaccel' launch options"
+      ],
+      "tips_ru": [
+        "Отключите 'Ожидание вертикального обновления' в настройках AMD Radeon",
+        "Установите 'Качество фильтрации текстур' = 'Производительность'",
+        "Отключите 'Оптимизация формата поверхности'",
+        "Включите 'Тройная буферизация OpenGL'",
+        "Используйте параметры запуска '-noforcemparms -noforcemaccel'"
+      ]
+    },
+    "intel": {
+      "name_en": "Intel HD/UHD Graphics",
+      "name_ru": "Intel HD/UHD Graphics",
+      "optimizations": {
+        "gl_vsync": "0",
+        "gl_ansio": "1",
+        "gl_texturemode": "GL_NEAREST_MIPMAP_NEAREST",
+        "gl_max_size": "128",
+        "gl_picmip": "2",
+        "r_detailtextures": "0",
+        "fps_max": "100",
+        "r_dynamic": "0",
+        "cl_shadows": "0",
+        "cl_weather": "0",
+        "max_shells": "0",
+        "max_smokepuffs": "0",
+        "fastsprites": "2"
+      },
+      "tips_en": [
+        "Set 3D preference to 'Performance' in Intel Graphics Settings",
+        "Disable 'Vertical Sync'",
+        "Lower resolution to 800x600 or 640x480 for best FPS",
+        "Use OpenGL renderer (-gl launch option)",
+        "Use '-noforcemparms -noforcemaccel -nofbo' launch options"
+      ],
+      "tips_ru": [
+        "Установите 3D-режим = 'Производительность' в настройках Intel",
+        "Отключите 'Вертикальная синхронизация'",
+        "Понизьте разрешение до 800x600 или 640x480 для лучшего FPS",
+        "Используйте OpenGL рендер (параметр запуска -gl)",
+        "Используйте параметры запуска '-noforcemparms -noforcemaccel -nofbo'"
+      ]
+    }
+  },
+  "performance_profiles": {
+    "ultra_low": {
+      "name_en": "Ultra Low (maximum FPS)",
+      "name_ru": "Ультра-низкие (максимум FPS)",
+      "target_en": "Very old PCs, Intel HD, laptops",
+      "target_ru": "Очень старые ПК, Intel HD, ноутбуки",
+      "settings": {
+        "fps_max": "100",
+        "gl_vsync": "0",
+        "gl_ansio": "1",
+        "gl_texturemode": "GL_NEAREST_MIPMAP_NEAREST",
+        "gl_max_size": "64",
+        "gl_picmip": "3",
+        "r_detailtextures": "0",
+        "r_dynamic": "0",
+        "cl_shadows": "0",
+        "cl_weather": "0",
+        "max_shells": "0",
+        "max_smokepuffs": "0",
+        "fastsprites": "2",
+        "cl_bob": "0",
+        "cl_corpsestay": "0",
+        "brightness": "2",
+        "gamma": "2.5"
+      },
+      "launch_options": "-gl -noforcemparms -noforcemaccel -nofbo -noaafonts -nojoy -w 640 -h 480 -32bpp"
+    },
+    "low": {
+      "name_en": "Low (good FPS, minimal visuals)",
+      "name_ru": "Низкие (хороший FPS, минимальный визуал)",
+      "target_en": "Old PCs, budget hardware",
+      "target_ru": "Старые ПК, бюджетное железо",
+      "settings": {
+        "fps_max": "100",
+        "gl_vsync": "0",
+        "gl_ansio": "2",
+        "gl_texturemode": "GL_LINEAR_MIPMAP_NEAREST",
+        "gl_max_size": "128",
+        "gl_picmip": "2",
+        "r_detailtextures": "0",
+        "r_dynamic": "0",
+        "cl_shadows": "0",
+        "cl_weather": "0",
+        "max_shells": "0",
+        "max_smokepuffs": "0",
+        "fastsprites": "1",
+        "cl_bob": "0",
+        "cl_corpsestay": "0",
+        "brightness": "2",
+        "gamma": "2.5"
+      },
+      "launch_options": "-gl -noforcemparms -noforcemaccel -noaafonts -nojoy -w 800 -h 600 -32bpp"
+    },
+    "medium": {
+      "name_en": "Medium (balanced)",
+      "name_ru": "Средние (сбалансированные)",
+      "target_en": "Mid-range PCs",
+      "target_ru": "Средние ПК",
+      "settings": {
+        "fps_max": "300",
+        "gl_vsync": "0",
+        "gl_ansio": "4",
+        "gl_texturemode": "GL_LINEAR_MIPMAP_LINEAR",
+        "gl_max_size": "256",
+        "gl_picmip": "0",
+        "r_detailtextures": "0",
+        "r_dynamic": "1",
+        "cl_shadows": "1",
+        "cl_weather": "0",
+        "max_shells": "4",
+        "max_smokepuffs": "4",
+        "fastsprites": "1",
+        "cl_bob": "0.01",
+        "cl_corpsestay": "30",
+        "brightness": "1.5",
+        "gamma": "2.5"
+      },
+      "launch_options": "-gl -noforcemparms -noforcemaccel -nojoy -w 1024 -h 768 -32bpp"
+    },
+    "high": {
+      "name_en": "High (quality visuals)",
+      "name_ru": "Высокие (качественный визуал)",
+      "target_en": "Modern PCs, gaming hardware",
+      "target_ru": "Современные ПК, игровое железо",
+      "settings": {
+        "fps_max": "999",
+        "gl_vsync": "0",
+        "gl_ansio": "16",
+        "gl_texturemode": "GL_LINEAR_MIPMAP_LINEAR",
+        "gl_max_size": "512",
+        "gl_picmip": "0",
+        "r_detailtextures": "1",
+        "r_dynamic": "1",
+        "cl_shadows": "1",
+        "cl_weather": "1",
+        "max_shells": "9",
+        "max_smokepuffs": "10",
+        "fastsprites": "0",
+        "cl_bob": "0.01",
+        "cl_corpsestay": "300",
+        "brightness": "1",
+        "gamma": "2.5"
+      },
+      "launch_options": "-gl -noforcemparms -noforcemaccel -nojoy -w 1920 -h 1080 -32bpp"
+    }
+  }
+}

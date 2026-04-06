@@ -1,0 +1,140 @@
+{
+  "weapons": {
+    "pistols": {
+      "glock_usp": {"command": "buy; menuselect 1; menuselect 1", "name": "Glock/USP", "price": 0, "side": "both"},
+      "usp_p228": {"command": "buy; menuselect 1; menuselect 2", "name": "USP/P228", "price": 600, "side": "both"},
+      "deagle": {"command": "buy; menuselect 1; menuselect 3", "name": "Desert Eagle", "price": 650, "side": "both"},
+      "elites_fiveseven": {"command": "buy; menuselect 1; menuselect 4", "name": "Elites/Five-SeveN", "price": 750, "side": "both"}
+    },
+    "shotguns": {
+      "m3": {"command": "buy; menuselect 2; menuselect 1", "name": "M3 (Pump)", "price": 1700, "side": "both"},
+      "xm1014": {"command": "buy; menuselect 2; menuselect 2", "name": "XM1014 (Auto)", "price": 3000, "side": "both"}
+    },
+    "smgs": {
+      "mac10_tmp": {"command": "buy; menuselect 3; menuselect 1", "name": "MAC-10/TMP", "price": 1400, "side": "both"},
+      "mp5": {"command": "buy; menuselect 3; menuselect 2", "name": "MP5", "price": 1500, "side": "both"},
+      "ump45": {"command": "buy; menuselect 3; menuselect 3", "name": "UMP-45", "price": 1700, "side": "both"},
+      "p90": {"command": "buy; menuselect 3; menuselect 4", "name": "P90", "price": 2350, "side": "both"}
+    },
+    "rifles": {
+      "galil_famas": {"command": "buy; menuselect 4; menuselect 1", "name": "Galil/Famas", "price": 2000, "side": "both"},
+      "ak47_m4a1": {"command": "buy; menuselect 4; menuselect 2", "name": "AK-47/M4A1", "price": 2500, "side": "both"},
+      "scout": {"command": "buy; menuselect 4; menuselect 3", "name": "Scout", "price": 2750, "side": "both"},
+      "sg552_aug": {"command": "buy; menuselect 4; menuselect 4", "name": "SG552/AUG", "price": 3500, "side": "both"},
+      "awp": {"command": "buy; menuselect 4; menuselect 5", "name": "AWP", "price": 4750, "side": "both"},
+      "g3sg1_sg550": {"command": "buy; menuselect 4; menuselect 6", "name": "G3SG1/SG550", "price": 5000, "side": "both"}
+    },
+    "mg": {
+      "m249": {"command": "buy; menuselect 5; menuselect 1", "name": "M249", "price": 5750, "side": "both"}
+    }
+  },
+  "equipment": {
+    "kevlar": {"command": "buyequip; menuselect 1", "name": "Kevlar", "price": 650},
+    "kevlar_helmet": {"command": "buyequip; menuselect 2", "name": "Kevlar + Helmet", "price": 1000},
+    "flashbang": {"command": "buyequip; menuselect 3", "name": "Flashbang", "price": 200},
+    "he_grenade": {"command": "buyequip; menuselect 4", "name": "HE Grenade", "price": 300},
+    "smoke_grenade": {"command": "buyequip; menuselect 5", "name": "Smoke Grenade", "price": 300},
+    "defuse_kit": {"command": "buyequip; menuselect 6", "name": "Defuse Kit (CT)", "price": 200},
+    "nightvision": {"command": "buyequip; menuselect 7", "name": "Night Vision", "price": 1250}
+  },
+  "presets": {
+    "buy_ak": {
+      "name": "Buy AK-47",
+      "commands": "buy; menuselect 4; menuselect 2",
+      "description": "Покупка AK-47"
+    },
+    "buy_m4": {
+      "name": "Buy M4A1",
+      "commands": "buy; menuselect 4; menuselect 2",
+      "description": "Покупка M4A1"
+    },
+    "buy_awp": {
+      "name": "Buy AWP",
+      "commands": "buy; menuselect 4; menuselect 5",
+      "description": "Покупка AWP"
+    },
+    "buy_deagle": {
+      "name": "Buy Deagle",
+      "commands": "buy; menuselect 1; menuselect 3",
+      "description": "Покупка Deagle"
+    },
+    "buy_scout": {
+      "name": "Buy Scout",
+      "commands": "buy; menuselect 4; menuselect 3",
+      "description": "Покупка Scout"
+    },
+    "buy_mp5": {
+      "name": "Buy MP5",
+      "commands": "buy; menuselect 3; menuselect 2",
+      "description": "Покупка MP5"
+    },
+    "buy_famas": {
+      "name": "Buy Famas/Galil",
+      "commands": "buy; menuselect 4; menuselect 1",
+      "description": "Покупка Famas/Galil"
+    },
+    "buy_armor": {
+      "name": "Buy Armor + Helmet",
+      "commands": "buyequip; menuselect 2",
+      "description": "Покупка кевлар + шлем"
+    },
+    "buy_he": {
+      "name": "Buy HE Grenade",
+      "commands": "buyequip; menuselect 4",
+      "description": "Покупка HE-гранаты"
+    },
+    "buy_flash": {
+      "name": "Buy Flashbang x2",
+      "commands": "buyequip; menuselect 3; buyequip; menuselect 3",
+      "description": "Покупка двух флешбэнгов"
+    },
+    "buy_smoke": {
+      "name": "Buy Smoke",
+      "commands": "buyequip; menuselect 5",
+      "description": "Покупка дымовой"
+    },
+    "buy_defuse": {
+      "name": "Buy Defuse Kit",
+      "commands": "buyequip; menuselect 6",
+      "description": "Покупка дефьюз-кита (CT)"
+    },
+    "buy_fullbuy": {
+      "name": "Full Buy",
+      "commands": "buy; menuselect 4; menuselect 2; buyequip; menuselect 2; buyequip; menuselect 3; buyequip; menuselect 3; buyequip; menuselect 4; buyequip; menuselect 5; buyequip; menuselect 6",
+      "description": "Полная закупка (оружие + броня + гранаты + деф)"
+    },
+    "buy_pistolround": {
+      "name": "Pistol Round",
+      "commands": "buyequip; menuselect 2",
+      "description": "Закупка на пистолетный раунд (кевлар + шлем)"
+    },
+    "buy_eco": {
+      "name": "Eco Round",
+      "commands": "buy; menuselect 1; menuselect 3; buyequip; menuselect 1",
+      "description": "Эко-раунд (Deagle + кевлар)"
+    },
+    "buy_force": {
+      "name": "Force Buy",
+      "commands": "buy; menuselect 4; menuselect 1; buyequip; menuselect 2",
+      "description": "Форс-раунд (Famas/Galil + броня)"
+    }
+  },
+  "default_binds": {
+    "KP_INS": "buy_armor",
+    "KP_END": "buy_he",
+    "KP_DOWNARROW": "buy_flash",
+    "KP_PGDN": "buy_smoke",
+    "KP_LEFTARROW": "buy_deagle",
+    "KP_5": "buy_defuse",
+    "KP_RIGHTARROW": "buy_flash",
+    "KP_HOME": "buy_ak",
+    "KP_UPARROW": "buy_m4",
+    "KP_PGUP": "buy_awp",
+    "KP_ENTER": "buy_fullbuy",
+    "KP_PLUS": "buy_scout",
+    "KP_MINUS": "buy_mp5",
+    "KP_DEL": "buy_famas",
+    "KP_SLASH": "buy_pistolround",
+    "KP_MULTIPLY": "buy_eco"
+  }
+}

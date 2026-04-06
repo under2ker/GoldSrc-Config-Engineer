@@ -1,0 +1,21 @@
+/** Согласованный список для F1 и настроек. */
+export const GLOBAL_KEYBOARD_SHORTCUTS: { action: string; keys: string }[] = [
+  { action: "Палитра команд", keys: "Ctrl+K / ⌘K" },
+  { action: "Экспорт", keys: "Ctrl+E / ⌘E" },
+  { action: "Импорт", keys: "Ctrl+I / ⌘I" },
+  { action: "Профили и история снимков", keys: "Ctrl+Shift+P / ⌘⇧P" },
+  { action: "Диагностика", keys: "Ctrl+Shift+D / ⌘⇧D" },
+  { action: "Настройки", keys: "Ctrl+Shift+S / ⌘⇧S" },
+  { action: "Главная", keys: "Ctrl+Shift+H / ⌘⇧H" },
+  { action: "Быстрая настройка (мастер)", keys: "Ctrl+Shift+Q / ⌘⇧Q" },
+  { action: "Режимы игры", keys: "Ctrl+Shift+M / ⌘⇧M" },
+  { action: "Сравнение конфигов", keys: "Ctrl+Shift+G / ⌘⇧G" },
+  { action: "Про-пресеты", keys: "Ctrl+Shift+B / ⌘⇧B" },
+  { action: "Прицел", keys: "Ctrl+Shift+X / ⌘⇧X" },
+  { action: "Чувствительность мыши", keys: "Ctrl+Shift+T / ⌘⇧T" },
+  { action: "Параметры запуска (Steam)", keys: "Ctrl+L / ⌘L" },
+  { action: "Алиасы (скрипты)", keys: "Ctrl+Shift+A / ⌘⇧A" },
+  { action: "Экспорт (дублирует переход к экспорту)", keys: "Ctrl+S / ⌘S" },
+  { action: "Справка по клавишам", keys: "F1" },
+  { action: "Полноэкранный режим окна", keys: "F11" },
+];

@@ -1,0 +1,62 @@
+{
+  "competitive": {
+    "name": "Конкурентный (точный)",
+    "name_en": "Competitive (precise)",
+    "settings": {
+      "cl_crosshair_size": "small",
+      "cl_crosshair_color": "\"50 250 50\"",
+      "cl_crosshair_translucent": "1",
+      "cl_dynamiccrosshair": "0"
+    }
+  },
+  "visible": {
+    "name": "Крупный (видимый)",
+    "name_en": "Large (visible)",
+    "settings": {
+      "cl_crosshair_size": "medium",
+      "cl_crosshair_color": "\"255 255 0\"",
+      "cl_crosshair_translucent": "0",
+      "cl_dynamiccrosshair": "0"
+    }
+  },
+  "training": {
+    "name": "Динамический (обучение)",
+    "name_en": "Dynamic (training)",
+    "settings": {
+      "cl_crosshair_size": "auto",
+      "cl_crosshair_color": "\"250 50 50\"",
+      "cl_crosshair_translucent": "1",
+      "cl_dynamiccrosshair": "1"
+    }
+  },
+  "minimal": {
+    "name": "Минимальный",
+    "name_en": "Minimal",
+    "settings": {
+      "cl_crosshair_size": "small",
+      "cl_crosshair_color": "\"0 255 0\"",
+      "cl_crosshair_translucent": "1",
+      "cl_dynamiccrosshair": "0"
+    }
+  },
+  "bright_red": {
+    "name": "Яркий красный",
+    "name_en": "Bright Red",
+    "settings": {
+      "cl_crosshair_size": "medium",
+      "cl_crosshair_color": "\"255 0 0\"",
+      "cl_crosshair_translucent": "0",
+      "cl_dynamiccrosshair": "0"
+    }
+  },
+  "cyan": {
+    "name": "Голубой",
+    "name_en": "Cyan",
+    "settings": {
+      "cl_crosshair_size": "small",
+      "cl_crosshair_color": "\"0 200 255\"",
+      "cl_crosshair_translucent": "1",
+      "cl_dynamiccrosshair": "0"
+    }
+  }
+}

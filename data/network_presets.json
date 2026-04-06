@@ -1,0 +1,72 @@
+{
+  "lan": {
+    "name": "LAN",
+    "description": "Локальная сеть / пинг < 5 мс",
+    "ping_range": "< 5",
+    "settings": {
+      "rate": "100000",
+      "cl_cmdrate": "128",
+      "cl_updaterate": "102",
+      "ex_interp": "0.01",
+      "cl_lw": "1",
+      "cl_lc": "1",
+      "pushlatency": "-1"
+    }
+  },
+  "broadband": {
+    "name": "Broadband",
+    "description": "Высокоскоростной интернет / пинг 5-30 мс",
+    "ping_range": "5 — 30",
+    "settings": {
+      "rate": "100000",
+      "cl_cmdrate": "105",
+      "cl_updaterate": "102",
+      "ex_interp": "0.01",
+      "cl_lw": "1",
+      "cl_lc": "1",
+      "pushlatency": "-15"
+    }
+  },
+  "medium": {
+    "name": "Medium",
+    "description": "Средний интернет / пинг 30-70 мс",
+    "ping_range": "30 — 70",
+    "settings": {
+      "rate": "80000",
+      "cl_cmdrate": "101",
+      "cl_updaterate": "101",
+      "ex_interp": "0.02",
+      "cl_lw": "1",
+      "cl_lc": "1",
+      "pushlatency": "-50"
+    }
+  },
+  "poor": {
+    "name": "Poor",
+    "description": "Плохой интернет / пинг 70-150 мс",
+    "ping_range": "70 — 150",
+    "settings": {
+      "rate": "40000",
+      "cl_cmdrate": "60",
+      "cl_updaterate": "60",
+      "ex_interp": "0.05",
+      "cl_lw": "1",
+      "cl_lc": "1",
+      "pushlatency": "-100"
+    }
+  },
+  "terrible": {
+    "name": "Terrible",
+    "description": "Очень плохой интернет / пинг > 150 мс",
+    "ping_range": "> 150",
+    "settings": {
+      "rate": "25000",
+      "cl_cmdrate": "40",
+      "cl_updaterate": "40",
+      "ex_interp": "0.1",
+      "cl_lw": "1",
+      "cl_lc": "1",
+      "pushlatency": "-150"
+    }
+  }
+}

@@ -1,0 +1,1005 @@
+# Анализ и план развития GoldSrc Config Engineer v3.0
+
+Проект уже очень солидный. Ниже — конкретные направления, которые поднимут его на следующий уровень.
+
+---
+
+## 1. Функциональные дополнения
+
+### 1.1. Система профилей пользователя
+
+```
+ПРОБЛЕМА: Сейчас генерация одноразовая — создал конфиг, забыл.
+РЕШЕНИЕ: Полноценная система профилей.
+
+profiles/
+├── default.json          # Профиль по умолчанию
+├── competitive.json      # Мой соревновательный
+├── surf_chill.json       # Для сёрфа
+└── lan_party.json        # Для LAN
+
+Функциональность:
+  — Сохранение всех настроек в именованный профиль
+  — Переключение между профилями в 1 клик
+  — Дублирование профиля как основы для нового
+  — Автосохранение последнего активного профиля
+  — Облачная синхронизация через GitHub Gist (опционально)
+
+Интерфейс:
+  — Dropdown в header area: [● Competitive ▼]
+  — Кнопки: [+ New] [Duplicate] [Delete] [Rename]
+  — При переключении — все вкладки обновляются мгновенно
+```
+
+### 1.2. Живой превью конфига
+
+```
+ПРОБЛЕМА: Пользователь не видит результат до экспорта.
+РЕШЕНИЕ: Панель реального времени с текстом конфига.
+
+┌─────────────────────────┬──────────────────────────┐
+│                         │  📄 Live Preview         │
+│  [Настройки]            │  ┌────────────────────┐  │
+│                         │  │ // autoexec.cfg    │  │
+│  Sensitivity [●──] 2.5  │  │ sensitivity "2.5"  │  │
+│                         │  │ fps_max "300"      │  │
+│  fps_max [──●──] 300    │  │ volume "0.7"       │  │
+│                         │  │ ...                │  │
+│                         │  └────────────────────┘  │
+│                         │  [Copy] [Export]          │
+└─────────────────────────┴──────────────────────────┘
+
+Реализация:
+  — Правая выдвижная панель (toggle кнопкой)
+  — CTkTextbox с подсветкой синтаксиса
+  — Обновление при каждом изменении любого параметра
+  — Вкладки по модулям: [autoexec] [network] [video] ...
+  — Кнопка Copy to Clipboard
+  — Подсветка изменённых строк (жёлтый фон на 2 сек)
+```
+
+### 1.3. Подсветка синтаксиса в превью
+
+```python
+# Цветовая схема для .cfg синтаксиса
+
+SYNTAX_COLORS = {
+    "comment":    "#6A9955",   # // комментарии
+    "command":    "#569CD6",   # sensitivity, bind, alias
+    "value":      "#CE9178",   # "2.5", "300"
+    "key":        "#DCDCAA",   # "MOUSE1", "w", "KP_INS"
+    "operator":   "#D4D4D4",   # +, -, ;
+    "exec":       "#C586C0",   # exec config/video.cfg
+    "dangerous":  "#F85149",   # rcon, sv_cheats
+}
+
+Реализация:
+  — Парсинг строк через regex
+  — CTkTextbox.tag_add() для раскрашивания
+  — Обновление подсветки при каждом изменении текста
+```
+
+### 1.4. История изменений и Undo/Redo
+
+```
+СИСТЕМА ИСТОРИИ
+
+Реализация через паттерн Command:
+  — Стек undo: до 50 операций
+  — Стек redo: очищается при новом действии
+  — Горячие клавиши: Ctrl+Z / Ctrl+Y
+  — Каждое изменение параметра = одна команда в стеке
+
+Интерфейс:
+  — Кнопки ↶ ↷ в заголовке контентной области
+  — Tooltip с описанием действия: "Undo: sensitivity 2.5 → 3.0"
+  — Визуальный индикатор: количество unsaved changes
+
+class HistoryManager:
+    def __init__(self, max_size=50):
+        self.undo_stack = []
+        self.redo_stack = []
+    
+    def execute(self, command: Command):
+        command.execute()
+        self.undo_stack.append(command)
+        self.redo_stack.clear()
+    
+    def undo(self):
+        if self.undo_stack:
+            cmd = self.undo_stack.pop()
+            cmd.undo()
+            self.redo_stack.append(cmd)
+    
+    def redo(self):
+        if self.redo_stack:
+            cmd = self.redo_stack.pop()
+            cmd.execute()
+            self.undo_stack.append(cmd)
+```
+
+### 1.5. Поиск по настройкам
+
+```
+ГЛОБАЛЬНЫЙ ПОИСК
+
+Расположение: верхняя часть контентной области
+Горячая клавиша: Ctrl+F или Ctrl+K (command palette стиль)
+
+┌──────────────────────────────────────────────┐
+│  🔍  Search settings...              Ctrl+K │
+├──────────────────────────────────────────────┤
+│  🖱️  sensitivity        Mouse → Controls    │
+│  🖱️  zoom_sensitivity   Mouse → Controls    │
+│  🎮  sv_accelerate       Advanced → Physics  │
+│  🔊  volume              Audio → General     │
+└──────────────────────────────────────────────┘
+
+Возможности:
+  — Поиск по имени CVAR
+  — Поиск по описанию ("чувствительность", "мышь")
+  — Поиск по вкладке/категории
+  — Нечёткий поиск (fuzzy match)
+  — Клик по результату → переход на нужную вкладку
+    и скролл к элементу с подсветкой (highlight flash)
+  — Поддержка обоих языков (ru/en)
+
+Реализация:
+  — Toplevel окно или встроенный dropdown
+  — Индексация всех CVAR из cvars.json при старте
+  — Фильтрация в реальном времени при вводе
+```
+
+### 1.6. Система пресетов закупок с визуальным редактором
+
+```
+ВИЗУАЛЬНЫЙ РЕДАКТОР BUY-СКРИПТОВ
+
+Вместо текстового ввода — интерактивное buy-меню:
+
+┌─────────────────────────────────────────────┐
+│  Buy Script Editor                          │
+│                                             │
+│  ┌─── Pistols ──────────────────────────┐   │
+│  │ [Glock] [USP] [P228] [Deagle] [FN57]│   │
+│  └──────────────────────────────────────┘   │
+│  ┌─── Rifles ───────────────────────────┐   │
+│  │ [AK-47] [M4A1] [AWP] [FAMAS] [SG]   │   │
+│  └──────────────────────────────────────┘   │
+│  ┌─── Equipment ────────────────────────┐   │
+│  │ [Kevlar+Helm] [Defuse] [HE] [Flash]  │   │
+│  └──────────────────────────────────────┘   │
+│                                             │
+│  Привязка: [KP_INS ▼]  Стоимость: $4750   │
+│                                             │
+│  Сгенерированный алиас:                    │
+│  alias "buy_ak_full" "ak47;vest;vesthelm..." │
+└─────────────────────────────────────────────┘
+
+  — Клик по оружию добавляет в текущий бинд
+  — Drag-and-drop для изменения порядка покупки
+  — Автоподсчёт стоимости
+  — Предупреждение если бюджет > $16000
+  — Отдельные пресеты: "Eco round", "Force buy", "Full buy"
+```
+
+### 1.7. Тестирование конфига
+
+```
+CONFIG VALIDATOR / TESTER
+
+Вкладка или модальное окно перед экспортом:
+
+┌─────────────────────────────────────────────┐
+│  ✅ Config Validation Report                │
+│                                             │
+│  ✅  Syntax check passed (142 commands)     │
+│  ✅  No conflicting binds                   │
+│  ✅  Network rates within safe range        │
+│  ⚠️  fps_max 999 may cause instability      │
+│  ⚠️  developer 1 is enabled (debug mode)     │
+│  ❌  bind "F10" — conflicts with quit       │
+│  ✅  All aliases resolved                   │
+│  ✅  No circular exec dependencies          │
+│                                             │
+│  Score: 94/100  [Export Anyway] [Fix Issues] │
+└─────────────────────────────────────────────┘
+
+Проверки:
+  — Конфликты биндов (две команды на одну клавишу)
+  — Опасные значения (fps_max 0, rate 0)
+  — Неиспользуемые алиасы
+  — Циклические exec
+  — Команды несовместимые с режимом игры
+  — Deprecated команды
+  — Общий score совместимости
+```
+
+---
+
+## 2. Дополнительные данные и контент
+
+### 2.1. Расширенная база CVAR
+
+```json
+// Добавить в cvars.json описания и метаданные
+
+{
+  "sensitivity": {
+    "default": 3.0,
+    "min": 0.1,
+    "max": 100.0,
+    "step": 0.1,
+    "type": "float",
+    "category": "mouse",
+    "module": "mouse.cfg",
+    "description_en": "Mouse sensitivity multiplier",
+    "description_ru": "Множитель чувствительности мыши",
+    "tags": ["mouse", "aim", "input"],
+    "pro_range": [1.0, 4.0],
+    "pro_average": 2.3,
+    "warning_below": 0.5,
+    "warning_above": 10.0,
+    "related": ["zoom_sensitivity_ratio", "m_yaw", "m_pitch"],
+    "tip_en": "Most pros use 1.5–3.5. Lower = more precise, Higher = faster turns",
+    "tip_ru": "Большинство про-игроков используют 1.5–3.5"
+  }
+}
+```
+
+### 2.2. Больше про-пресетов
+
+```
+ДОПОЛНИТЕЛЬНЫЕ ПРЕСЕТЫ (20+ игроков)
+
+Tier 1 (легенды, уже есть):
+  f0rest, GeT_RiGhT, neo, markeloff, SpawN,
+  HeatoN, Edward, cArn, Potti, elemeNt
+
+Tier 2 (добавить):
+  — trace (mixTeam) — культовый русский игрок
+  — Kuben (Virtus.pro)
+  — walle (fnatic)
+  — zonic (mTw)
+  — ahl (NiP)
+  — method (EG)
+  — cogu (mibr) — легенда бразильского CS
+  — solo (4Kings)
+  — vesslan (NiP)
+  — XeqtR (NoA/EG)
+
+Tier 3 (стримеры/контент-мейкеры):
+  — 3kliksphilip конфиг
+  — "Recommended Competitive" (авторский)
+  — "Maximum Visibility" (авторский)
+
+Метаданные пресета:
+  — Фото игрока (64x64 PNG, в assets/)
+  — Годы активности
+  — Ссылка на HLTV/Liquipedia
+  — Краткая биография (2-3 строки)
+  — Достижения (Major wins)
+```
+
+### 2.3. Расширенные режимы игры
+
+```
+ДОПОЛНИТЕЛЬНЫЕ РЕЖИМЫ
+
+Добавить:
+  — JailBreak (JB)
+  — Paintball
+  — Soccer / Football
+  — BaseBuilder
+  — SuperHero
+  — CSDuration
+  — CSDM FFA (Free For All DM)
+  — AWP Only
+  — Knife Only / Arena
+  — Mini-games
+
+Для каждого режима:
+  — Уникальные алиасы и бинды
+  — Рекомендованные настройки сети
+  — Специфичные CVAR
+  — Описание режима
+```
+
+---
+
+## 3. UI/UX улучшения
+
+### 3.1. Интерактивный тур / онбординг
+
+```
+FIRST-RUN EXPERIENCE
+
+При первом запуске (или по кнопке "?" в header):
+
+Шаг 1: Приветствие
+  "Welcome to CS 1.6 Config Engineer!"
+  "Let's set up your perfect config in 3 steps"
+
+Шаг 2: Подсветка Quick Setup
+  Затемнение всего кроме Quick Setup
+  Стрелка + подсказка: "Start here for a quick config"
+
+Шаг 3: Подсветка Sidebar
+  "Navigate between sections to fine-tune every detail"
+
+Шаг 4: Подсветка Export
+  "When ready, export your config here"
+
+Реализация:
+  — Overlay frame с полупрозрачным фоном
+  — «Окошко» (spotlight) вокруг подсвечиваемого элемента
+  — Кнопки [Next] [Skip Tour]
+  — Сохранение флага в config: "tour_completed": true
+```
+
+### 3.2. Dashboard / Home page
+
+```
+ГЛАВНАЯ СТРАНИЦА (вместо сразу Quick Setup)
+
+┌──────────────────────────────────────────────────┐
+│  👋 Welcome back!                                │
+│                                                  │
+│  ┌─── Quick Actions ─────────────────────────┐   │
+│  │  [⚡ Quick Setup]  [📥 Import]  [📤 Export]│   │
+│  └───────────────────────────────────────────┘   │
+│                                                  │
+│  ┌─── Current Profile ───────────────────────┐   │
+│  │  Profile: Competitive                     │   │
+│  │  Mode: Classic  |  Sens: 2.5  |  FPS: 300│   │
+│  │  Last modified: 2 hours ago               │   │
+│  │  Completeness: ████████░░ 78%             │   │
+│  │  [Edit] [Export] [Duplicate]              │   │
+│  └───────────────────────────────────────────┘   │
+│                                                  │
+│  ┌─── Recent Exports ───────────────────────┐    │
+│  │  📄 competitive_20250601.cfg   2h ago     │   │
+│  │  📄 surf_config.cfg           1d ago      │   │
+│  │  📄 lan_party.cfg             3d ago      │   │
+│  └───────────────────────────────────────────┘   │
+│                                                  │
+│  ┌─── Tips ─────────────────────────────────┐    │
+│  │  💡 Did you know? Most CS 1.6 pros use   │   │
+│  │  sensitivity between 1.5 and 3.5         │   │
+│  └───────────────────────────────# Анализ и план развития GoldSrc Config Engineer v3.0
+
+Проект уже очень солидный. Ниже — конкретные предложения, разбитые по категориям, от наиболее ценных к менее критичным.
+
+---
+
+## 1. Функциональные дополнения (Core)
+
+### 1.1. Профили пользователя
+
+```
+ПРОБЛЕМА: Сейчас генерируется один конфиг за раз.
+Игрок может хотеть несколько конфигов под разные ситуации.
+
+РЕШЕНИЕ: Система профилей
+
+┌─────────────────────────────────────────────────┐
+│  👤 Profiles                                    │
+│                                                 │
+│  ┌──────────┐ ┌──────────┐ ┌──────────┐        │
+│  │ 🏆 Comp  │ │ 🏃 KZ    │ │ 🧟 ZM    │ [+ New]│
+│  │ Active ● │ │          │ │          │        │
+│  └──────────┘ └──────────┘ └──────────┘        │
+│                                                 │
+│  Profile: "Competitive Main"                    │
+│  Created: 2025-06-10                            │
+│  Last modified: 2025-06-14                      │
+│  Mode: Classic | Sensitivity: 2.5              │
+└─────────────────────────────────────────────────┘
+
+Реализация:
+  — Хранение в ~/Documents/CSConfigEngineer/profiles/
+  — Формат: JSON (имя, дата, все настройки)
+  — Быстрое переключение между профилями
+  — Дублирование профиля (Clone)
+  — Экспорт/импорт профилей (.json)
+```
+
+### 1.2. Калькулятор чувствительности мыши
+
+```
+НОВАЯ ВКЛАДКА: "Sensitivity Calculator"
+
+Функции:
+  — Ввод DPI мыши
+  — Ввод sensitivity CS 1.6
+  — Расчёт eDPI (DPI × sensitivity)
+  — Расчёт cm/360° (сколько см на полный оборот)
+  — Конвертер из других игр:
+      CS:GO → CS 1.6 (коэффициент ×1.0)
+      Quake → CS 1.6
+      Valorant → CS 1.6
+  — Рекомендация диапазона по режиму:
+      Competitive: 800-1200 eDPI
+      KZ: 1200-2000 eDPI
+      Surf: 600-1000 eDPI
+  — Визуальная шкала: "ваша чувствительность среди про-игроков"
+
+┌─────────────────────────────────────────────────┐
+│  🖱️ Sensitivity Calculator                      │
+│                                                 │
+│  DPI:        [800    ]                          │
+│  Sensitivity:[2.5    ]                          │
+│  ────────────────────────────────────────────   │
+│  eDPI:       2000                               │
+│  cm/360°:    20.8 cm                            │
+│  ────────────────────────────────────────────   │
+│  │▓▓▓▓▓▓▓▓▓▓▓▓●▓▓▓▓▓▓▓▓▓▓░░░░░░░░░░░░│        │
+│  Low            You          High               │
+│  f0rest(1.3)   ↑    SpawN(3.5)                 │
+│  ────────────────────────────────────────────   │
+│  Convert from CS:GO: [3.0] → CS 1.6: [3.0]    │
+└─────────────────────────────────────────────────┘
+```
+
+### 1.3. Тестировщик биндов (Bind Tester)
+
+```
+ИНТЕРАКТИВНАЯ КЛАВИАТУРА
+
+Визуальная раскладка клавиатуры прямо в приложении:
+  — Каждая клавиша — кликабельная кнопка
+  — Цветовая кодировка по категориям:
+      Синий  — Movement (WASD, Space, Ctrl)
+      Зелёный — Weapons (1-5, Q)
+      Оранжевый — Communication (Y, U, H)
+      Красный — Buy binds (Numpad)
+      Серый — Unbound
+  — Клик по клавише → popup с текущим биндом + редактирование
+  — Подсветка конфликтов: две функции на одну клавишу = красная рамка
+  — Отображение мыши отдельным блоком (LMB, RMB, Mouse3-5, Wheel)
+
+┌──┬──┬──┬──┬──┬──┬──┬──┬──┬──┬──┬──┬──┬──────┐
+│` │1 │2 │3 │4 │5 │6 │7 │8 │9 │0 │- │= │ Bksp │
+├──┴┬─┴┬─┴┬─┴┬─┴┬─┴┬─┴┬─┴┬─┴┬─┴┬─┴┬─┴┬─┴┬─────┤
+│Tab│Q │W │E │R │T │Y │U │I │O │P │[ │] │  \  │
+├───┴┬─┴┬─┴┬─┴┬─┴┬─┴┬─┴┬─┴┬─┴┬─┴┬─┴┬─┴┬─┴─────┤
+│Caps│A │S │D │F │G │H │J │K │L │; │' │ Enter  │
+├────┴┬─┴┬─┴┬─┴┬─┴┬─┴┬─┴┬─┴┬─┴┬─┴┬─┴┬─┴────────┤
+│Shift│Z │X │C │V │B │N │M │, │. │/ │  Shift    │
+├─────┼──┼──┴┬─┴──┴──┴──┴──┴─┬┴──┼──┼──┴─────────┤
+│Ctrl │Wi│Alt│    Space       │Alt│Wi│    Ctrl     │
+└─────┴──┴───┴────────────────┴───┴──┴────────────┘
+
+Реализация: CTkFrame + grid of CTkButtons с tooltip
+```
+
+### 1.4. Launch Options Generator
+
+```
+ГЕНЕРАТОР ПАРАМЕТРОВ ЗАПУСКА
+
+На основе выбранных настроек автоматически формируется
+строка параметров запуска Steam:
+
+Результат:
+  -noforcemparms -noforcemaccel -noforcemspd 
+  -freq 144 -w 1024 -h 768 -nojoy -noipx 
+  -32bpp -gl -stretchaspect
+
+Настройки:
+  ☑ Disable mouse acceleration (-noforcemparms -noforcemaccel)
+  ☑ Monitor refresh rate: [144] Hz (-freq 144)
+  ☑ Resolution: [1024] × [768]
+  ☑ Disable joystick (-nojoy)
+  ☑ OpenGL renderer (-gl)
+  ☑ 32-bit color (-32bpp)
+  ☑ No splash screen (-novid)
+  ☐ Developer mode (-dev)
+  ☐ Console on start (-console)
+
+Кнопки:
+  [Copy to Clipboard]  [Save to file]
+```
+
+### 1.5. История изменений конфига (Config History)
+
+```
+АВТОМАТИЧЕСКОЕ ВЕРСИОНИРОВАНИЕ
+
+При каждой генерации:
+  — Сохраняется копия с timestamp
+  — output/history/2025-06-14_153022/
+  — Максимум 20 последних версий (настраиваемо)
+  — Возможность откатиться к любой предыдущей версии
+  — Diff между текущим и историческим конфигом
+
+Хранилище: SQLite или простая файловая система
+```
+
+---
+
+## 2. Улучшения UI/UX
+
+### 2.1. Кнопка Preview / Live Preview
+
+```
+ПРЕВЬЮ КОНФИГА ПЕРЕД ЭКСПОРТОМ
+
+Встроенный просмотрщик генерируемого .cfg:
+  — Текстовая область с подсветкой синтаксиса
+  — Подсветка: 
+      Зелёный — комментарии (// ...)
+      Синий — команды (bind, sensitivity, fps_max)
+      Оранжевый — значения (числа, строки)
+      Серый — секции (// ─── NETWORK ───)
+  — Выбор модуля для просмотра (tabs: autoexec | network | video | ...)
+  — Кнопка "Copy" для каждого модуля
+  — Подсчёт строк и команд
+
+┌─── Preview ──────────────────────────────────────┐
+│  [autoexec] [network] [video] [audio] [mouse]    │
+│  ─────────────────────────────────────────────   │
+│  1 │ // ═══════════════════════════════════════  │
+│  2 │ // CS 1.6 Network Configuration            │
+│  3 │ // Generated: 2025-06-14 15:30             │
+│  4 │ // Mode: Classic (Competitive)              │
+│  5 │ // ═══════════════════════════════════════  │
+│  6 │                                             │
+│  7 │ rate 25000                                  │
+│  8 │ cl_cmdrate 101                              │
+│  9 │ cl_updaterate 101                           │
+│ 10 │ ex_interp 0.01                              │
+│    │                                             │
+│  ─────────────────────────────────────────────   │
+│  Lines: 42 | Commands: 28 | Size: 1.2 KB        │
+│                              [Copy] [Export]     │
+└──────────────────────────────────────────────────┘
+
+Реализация: CTkTextbox с tag-based подсветкой
+```
+
+### 2.2. Dashboard (стартовый экран вместо Quick Setup)
+
+```
+ГЛАВНАЯ СТРАНИЦА — DASHBOARD
+
+┌──────────────────────────────────────────────────┐
+│  Welcome to GoldSrc Config Engineer              │
+│  ────────────────────────────────────────────    │
+│                                                  │
+│  ┌──────────────┐  ┌──────────────┐              │
+│  │ ⚡ Quick Gen  │  │ 📂 Open Last │              │
+│  │ New config   │  │ classic_comp │              │
+│  └──────────────┘  └──────────────┘              │
+│                                                  │
+│  ┌──────────────┐  ┌──────────────┐              │
+│  │ 📥 Import    │  │ ⭐ Pro Preset│              │
+│  │ From file    │  │ Browse pros  │              │
+│  └──────────────┘  └──────────────┘              │
+│                                                  │
+│  ─── Recent Configs ────────────────────────     │
+│  │ 🕐 Classic Comp    │ 2025-06-14 │ [Open] │    │
+│  │ 🕐 KZ Practice     │ 2025-06-13 │ [Open] │    │
+│  │ 🕐 Surf Chill      │ 2025-06-10 │ [Open] │    │
+│                                                  │
+│  ─── Tips ──────────────────────────────────     │
+│  💡 "Use raw input for consistent sensitivity"   │
+└──────────────────────────────────────────────────┘
+```
+
+### 2.3. Темы оформления
+
+```
+НЕСКОЛЬКО ЦВЕТОВЫХ ТЕМУ
+
+1. "Midnight" (текущая) — тёмно-синяя (#0D1117)
+2. "Carbon" — чисто чёрная (#000000 / #0A0A0A)  
+3. "Military" — тёмно-зелёная (#0D1A0D / #1A2E1A)
+4. "Retro CS" — оливково-жёлтая (стиль оригинального CS меню)
+5. "Light" — светлая тема (для особых случаев)
+
+Переключение: Settings → Theme
+Хранение выбора: config.json в AppData
+```
+
+### 2.4. Горячие клавиши приложения
+
+```
+KEYBOARD SHORTCUTS
+
+Ctrl+G          — Generate Config (Quick Setup)
+Ctrl+E          — Export
+Ctrl+I          — Import  
+Ctrl+S          — Save current profile
+Ctrl+Shift+S    — Save As...
+Ctrl+1..8       — Переключение вкладок
+Ctrl+P          — Preview config
+Ctrl+D          — Compare (Diff)
+Ctrl+,          — Settings
+F1              — Help / Documentation
+Ctrl+Z          — Undo last change
+Ctrl+Q          — Quit
+
+Отображение: подсказки справа в меню + footer с основными
+```
+
+---
+
+## 3. Данные и контент
+
+### 3.1. Расширенная база CVAR
+
+```
+ДОБАВИТЬ В cvars.json:
+
+Gameplay (недостающие):
+  — cl_bob / cl_bobup / cl_bobcycle (покачивание оружия)
+  — cl_righthand (правая/левая рука)
+  — cl_weather (погодные эффекты)
+  — cl_minmodels (минимальные модели)
+  — cl_shadows (тени игроков)
+  — fastsprites (дым/огонь)
+  — max_shells / max_smokepuffs (гильзы/дым)
+  — cl_corpsestay (время лежания трупов)
+
+Advanced:
+  — gl_overbright
+  — gl_cull
+  — gl_keeptjunctions
+  — gl_ztrick
+  — gl_fog
+  — ati_subdiv / ati_npatch
+
+Demo:
+  — cl_autodemo (авто-запись демо)
+  — cl_autorecord  
+  — viewdemo команды
+```
+
+### 3.2. Дополнительные режимы
+
+```
+НОВЫЕ РЕЖИМЫ В modes.json:
+
+│ Режим        │ Описание                              │
+├──────────────┼───────────────────────────────────────┤
+│ JailBreak    │ JailBreak мод                         │
+│ Paintball    │ Paintball мод                         │
+│ BaseBuilder  │ Base Builder                          │
+│ Soccer       │ Soccer Jam                            │
+│ CSDM FFA     │ CSDM Free For All (отличие от DM)     │
+│ Clan War     │ PCW / Clan War (строже чем Classic)    │
+│ AWP Only     │ AWP-карты                             │
+│ Aim          │ Aim-карты (aim_map, aim_headshot)      │
+│ Retake       │ Retake (afterplant)                    │
+│ Practice     │ Тренировка (sv_cheats, noclip бинды)   │
+```
+
+### 3.3. Больше про-пресетов
+
+```
+ДОПОЛНИТЕЛЬНЫЕ ПРО-ИГРОКИ:
+
+Tier 1 (легенды, добавить):
+  — cogu (mibr) — легенда AWP
+  — zet (M19) — русская сцена
+  — kucher (Na'Vi)
+  — starix (Na'Vi)
+  — trace (WeMade FOX)
+  — solo (Virtus.pro)
+  
+Tier 2 (тоже известные):
+  — walle (fnatic)
+  — RobbaN (fnatic)
+  — ave (fnatic)
+  — face (SK)
+
+Формат карточки (расширить):
+  — Фото (URL или embedded base64)
+  — Полное имя
+  — Страна (флаг)
+  — Команда(ы)
+  — Период активности (2003-2012)
+  — Основная роль (AWP / Entry / IGL / Support / Lurk)
+  — Мышь и коврик (исторические данные)
+  — Все настройки (sens, res, crosshair, rate...)
+  — Ссылка на HLTV/Liquipedia
+```
+
+### 3.4. Словарь CVAR (встроенная документация)
+
+```
+ВСТРОЕННАЯ СПРАВКА ПО КАЖДОМУ CVAR
+
+При hover или клике на "?" рядом с настройкой:
+
+┌─────────────────────────────────────────────────┐
+│  📖 cl_updaterate                                │
+│  ─────────────────────────────────────────────  │
+│  Type: integer                                   │
+│  Range: 10 — 102                                 │
+│  Default: 20                                     │
+│  Category: Network                               │
+│  ─────────────────────────────────────────────  │
+│  Количество пакетов обновления, запрашиваемых   │
+│  клиентом от сервера в секунду.                  │
+│  ─────────────────────────────────────────────  │
+│  Рекомендации:                                   │
+│  • LAN: 101-102                                  │
+│  • Broadband: 101                                │
+│  • Slow connection: 40-60                        │
+│  ─────────────────────────────────────────────  │
+│  ⚠️ Значение выше реального tickrate сервера    │
+│  не даст эффекта.                                │
+└─────────────────────────────────────────────────┘
+
+Данные: добавить поле "description" и "tips" в cvars.json
+Реализация: tooltip или popup panel справа от контрола
+```
+
+---
+
+## 4. Технические улучшения
+
+### 4.1. Система настроек приложения (App Settings)
+
+```
+НОВАЯ ВКЛАДКА В SIDEBAR: ⚙ Settings
+
+Секции:
+
+General:
+  — Language: [Русский ▼]
+  — Theme: [Midnight ▼]
+  — Default game mode: [Classic ▼]
+  — Output directory: [~/Documents/CS16Config] [Browse]
+  — Auto-open output folder after export: ☑
+  
+Export:
+  — Export format: ○ Single file  ● Modular set
+  — Add timestamps in comments: ☑
+  — Add section separators: ☑
+  — Comment style: [Banner ▼] (Banner / Minimal / None)
+  — Line ending: [LF ▼] (LF / CRLF)
+  — Encoding: [UTF-8 ▼]
+  
+History:
+  — Save config history: ☑
+  — Max history entries: [20]
+  — History location: [.../history]
+  
+Advanced:
+  — Enable unsafe commands in import: ☐
+  — Show developer console: ☐
+  — Check for updates on startup: ☑
+
+Хранение: config.json в %APPDATA%/GoldSrcConfigEngineer/
+```
+
+### 4.2. Логирование
+
+```
+СИСТЕМА ЛОГОВ
+
+— Логирование всех операций в файл
+— Уровни: DEBUG, INFO, WARNING, ERROR
+— Ротация: 5 файлов по 1MB
+— Расположение: %APPDATA%/GoldSrcConfigEngineer/logs/
+— В GUI: кнопка "Open Logs" в Settings
+
+Формат:
+  2025-06-14 15:30:22 [INFO] Config generated: Classic mode
+  2025-06-14 15:30:22 [INFO] Exported 11 files to output/cstrike_20250614_153022/
+  2025-06-14 15:31:05 [WARNING] Import: blocked unsafe command "rcon_password" on line 42
+  2025-06-14 15:31:05 [ERROR] Import failed: invalid syntax on line 67
+
+Библиотека: стандартный logging с RotatingFileHandler
+```
+
+### 4.3. Автообновление данных
+
+```
+ОБНОВЛЕНИЕ ПРЕСЕТОВ БЕЗ ОБНОВЛЕНИЯ ПРИЛОЖЕНИЯ
+
+— JSON-файлы данных могут обновляться с GitHub
+— Кнопка "Check for updates" в Settings
+— Сравнение версий data-файлов (поле "version" в каждом JSON)
+— Скачивание только изменённых файлов
+— Backup перед обновлением
+
+API endpoint: GitHub raw content или GitHub Releases
+```
+
+### 4.4. Юнит-тесты
+
+```
+ТЕСТИРОВАНИЕ
+
+tests/
+├── test_generator.py        # Генерация всех модулей
+├── test_validator.py        # Валидация CVAR
+├── test_optimizer.py        # GPU оптимизация
+├── test_importer.py         # Импорт с безопасностью
+├── test_exporter.py         # Экспорт в файлы
+├── test_modes.py            # Все режимы генерируются без ошибок
+├── test_presets.py          # Все пресеты валидны
+└── test_data_integrity.py   # Все JSON корректны
+
+Покрытие:
+  — Каждый режим генерирует валидный .cfg
+  — Каждый CVAR в пределах допустимого диапазона
+  — Каждый пресет содержит все обязательные поля
+  — Импорт блокирует все опасные команды
+  — Экспорт создаёт все ожидаемые файлы
+
+Библиотека: pytest + pytest-cov
+CI: GitHub Actions (on push, on PR)
+```
+
+### 4.5. Сборка в .exe
+
+```
+УПАКОВКА ДЛЯ WINDOWS
+
+Инструмент: PyInstaller или Nuitka
+
+pyinstaller --onefile --windowed \
+  --icon=assets/icon.ico \
+  --add-data="cfg_generator/data;cfg_generator/data" \
+  --add-data="cfg_generator/i18n;cfg_generator/i18n" \
+  --add-data="assets;assets" \
+  --name="GoldSrcConfigEngineer" \
+  main.py
+
+Результат: GoldSrcConfigEngineer.exe (~25-40MB)
+  — Без необходимости установки Python
+  — Портативный (можно на флешку)
+  — Автоматическая сборка через GitHub Actions + Release
+```
+
+---
+
+## 5. Дополнительные вкладки / секции
+
+### 5.1. Вкладка «Community» (будущее)
+
+```
+COMMUNITY CONFIGS
+
+— Загрузка конфигов из онлайн-репозитория
+— Рейтинг конфигов (лайки)
+— Категории: by mode, by team, by play style
+— Поиск по имени / тегам
+— Кнопка "Upload my config"
+
+Бэкенд: GitHub Gist API или простой JSON на GitHub Pages
+Формат: .json с метаданными + .cfg содержимое
+
+Это v4.0+ функция, но архитектуру стоит заложить сейчас.
+```
+
+### 5.2. Вкладка «Demo Settings»
+
+```
+НАСТРОЙКИ ДЛЯ ЗАПИСИ И ПРОСМОТРА ДЕМО
+
+— cl_autodemo toggle
+— Бинды для управления демо:
+    F5 — record demo
+    F6 — stop recording  
+    F7 — play last demo
+— Настройки viewmodel при просмотре
+— Настройки HUD для кинематографии
+— Пресеты: "Fragmovie", "Review", "Stream"
+```
+
+### 5.3. Секция «Diagnostics» в Hardware
+
+```
+ДИАГНОСТИКА КОНФИГА
+
+Автоматический анализ текущих настроек:
+
+┌─────────────────────────────────────────────────┐
+│  🔍 Config Diagnostics                          │
+│  ─────────────────────────────────────────────  │
+│  ✅ Network settings optimized for Broadband    │
+│  ✅ Mouse raw input enabled                      │
+│  ⚠️ fps_max (100) lower than monitor Hz (144)   │
+│  ⚠️ cl_updaterate (60) could be higher          │
+│  ❌ Volume (1.0) too high — may miss footsteps  │
+│  ❌ cl_dynamiccrosshair is ON — not recommended │
+│  ─────────────────────────────────────────────  │
+│  Score: 7/10                                     │
+│  [Apply all recommendations]                     │
+└─────────────────────────────────────────────────┘
+
+Правила: набор if/else проверок на конфликты и рекомендации
+Категории: Critical / Warning / Info
+Кнопка: автоисправление всех предупреждений
+```
+
+---
+
+## 6. Визуальные дополнения (UI Polish)
+
+### 6.1. Анимированный логотип при запуске
+
+```
+Splash screen 1.5 секунды:
+  — Логотип с эффектом "typewriter" (посимвольное появление)
+  — Прогресс-бар загрузки данных
+  — Fade-переход к основному окну
+```
+
+### 6.2. Звуковые эффекты (опционально)
+
+```
+Тонкие звуки CS 1.6 при действиях:
+  — Генерация конфига: звук "menu accept" из CS
+  — Ошибка: звук "menu deny"
+  — Переключение вкладки: тихий клик
+
+Опция в Settings: ☑ Enable sounds
+По умолчанию: выключено
+Звуки: .wav из ресурсов CS 1.6 (или похожие CC0)
+```
+
+### 6.3. «Карта изменений» при Compare
+
+```
+ВИЗУАЛЬНЫЙ DIFF
+
+Вместо простой таблицы — визуальная карта:
+  — Radar chart (паутина) для сравнения конфигов
+  — Оси: Sensitivity, FPS, Network, Audio, Visual
+  — Два конфига = два полигона разных цветов
+  — Сразу видно, где различия
+
+Реализация: Canvas с нарисованным полигоном
+(CustomTkinter Canvas поддерживает create_polygon)
+```
+
+---
+
+## 7. Приоритизация
+
+```
+ПРИОРИТЕТ РЕАЛИЗАЦИИ:
+
+Sprint 1 (v3.1) — Must Have:
+  ■ Preview конфига перед экспортом
+  ■ Launch Options Generator  
+  ■ Расширенная база CVAR (bob, righthand, weather, etc.)
+  ■ Встроенная справка по CVAR (tooltips)
+  ■ Настройки приложения (Settings вкладка)
+  ■ Горячие клавиши
+  ■ Логирование
+
+Sprint 2 (v3.2) — Should Have:
+  ■ Система профилей пользователя
+  ■ Калькулятор чувствительности
+  ■ Config Diagnostics
+  ■ История конфигов
+  ■ Больше про-пресетов (+10 игроков)
+  ■ Больше режимов (+5 режимов)
+  ■ Сборка в .exe
+
+Sprint 3 (v3.5) — Nice to Have:
+  ■ Интерактивная клавиатура (Bind Tester)
+  ■ Dashboard (стартовый экран)
+  ■ Темы оформления (3-4 темы)
+  ■ Radar chart для Compare
+  ■ Demo Settings
+  ■ Юнит-тесты + CI
+
+Sprint 4 (v4.0) — Future:
+  ■ Community Configs (онлайн)
+  ■ Автообновление данных
+  ■ Звуковые эффекты
+  ■ Кастомный title bar
+```
+
+---
+
+Этот план превращает уже крепкий инструмент в **полноценную экосистему** для настройки CS 1.6, сопоставимую с коммерческими утилитами вроде Prosettings или ESEA config tools, но полностью локальную и кастомизируемую.
